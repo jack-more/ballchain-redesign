@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ball Chain Manufacturing | Premium Industrial Catalog</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --blue: #0033a0;
+      --blue-dark: #04164d;
+      --red: #b22234;
+      --ink: #06101f;
+      --steel: #d8dde5;
+      --chrome: #f7f9fc;
+      --paper: #f4f6fa;
+      --line: rgba(0, 51, 160, 0.18);
+      --shadow: 8px 8px 0 var(--blue);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(0, 51, 160, 0.055) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(0, 51, 160, 0.055) 1px, transparent 1px),
+        linear-gradient(180deg, #ffffff 0%, #f4f6fa 100%);
+      background-size: 32px 32px, 32px 32px, 100% 100%;
+      font-family: Inter, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.plinko-open {
+      overflow: hidden;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 2;
+    }
+
+    .chrome-text {
+      color: transparent;
+      background:
+        linear-gradient(180deg, #ffffff 0%, #dce3eb 20%, #7f8994 39%, #ffffff 51%, #8c96a1 62%, #f9fbff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 2px var(--blue);
+      text-shadow:
+        2px 2px 0 #ffffff,
+        5px 5px 0 var(--blue),
+        8px 8px 0 rgba(178, 34, 52, 0.5);
+    }
+
+    .micro-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid var(--blue);
+      background: #ffffff;
+      color: var(--blue);
+      box-shadow: 4px 4px 0 var(--blue);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .metal-panel {
+      border: 3px solid var(--blue);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(225, 232, 242, 0.92)),
+        linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+    }
+
+    .bead-rule {
+      height: 18px;
+      border-block: 2px solid var(--blue);
+      background:
+        radial-gradient(circle at 8px 50%, #ffffff 0 18%, #cbd2db 20% 37%, #5b6674 39% 46%, transparent 48%) 0 0 / 28px 100% repeat-x,
+        linear-gradient(180deg, #ffffff, #d8dde5);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      border: 3px solid var(--blue);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--blue);
+      box-shadow: 5px 5px 0 var(--blue);
+      padding: 12px 18px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease, border-color 150ms ease;
+    }
+
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 7px 7px 0 var(--red);
+      border-color: var(--red);
+      background: var(--red);
+      color: #ffffff;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--red);
+    }
+
+    .icon-button {
+      width: 46px;
+      height: 46px;
+      padding: 0;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      border-bottom: 4px solid var(--blue);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero {
+      min-height: calc(100vh - 86px);
+      display: grid;
+      align-items: stretch;
+      overflow: hidden;
+      border-bottom: 4px solid var(--blue);
+      background:
+        linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.92) 38%, rgba(255,255,255,0.35) 100%),
+        url("https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/original/carousel/40/ball-chain-spools--rolls-hero-image__75059.jpg?c=2") center right / cover no-repeat;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .hero-title {
+      font-size: clamp(4.2rem, 10vw, 11rem);
+      line-height: 0.78;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .hero-copy {
+      max-width: 640px;
+      border-left: 4px solid var(--red);
+      padding-left: 18px;
+      color: var(--blue-dark);
+    }
+
+    .quick-shop {
+      align-self: end;
+      margin-bottom: 36px;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .quick-row {
+      display: grid;
+      grid-template-columns: 68px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      border-top: 2px solid var(--line);
+      padding: 14px 0;
+    }
+
+    .quick-row:first-of-type {
+      border-top: 0;
+    }
+
+    .product-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: minmax(250px, 290px) auto;
+      overflow: hidden;
+      border: 3px solid var(--blue);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: var(--shadow);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 10px 10px 0 var(--red);
+    }
+
+    .product-media {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(90deg, rgba(0, 51, 160, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(0, 51, 160, 0.06) 1px, transparent 1px),
+        radial-gradient(circle at 50% 15%, rgba(255,255,255,0.95), rgba(215,222,232,0.7));
+      background-size: 24px 24px, 24px 24px, 100% 100%;
+      border-bottom: 3px solid var(--blue);
+      overflow: hidden;
+    }
+
+    .product-media img {
+      width: min(78%, 310px);
+      height: 86%;
+      object-fit: contain;
+      filter: drop-shadow(18px 18px 24px rgba(4, 22, 77, 0.28));
+      transition: transform 240ms ease;
+    }
+
+    .product-card:hover .product-media img {
+      transform: scale(1.04) rotate(-1deg);
+    }
+
+    .product-kicker {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      border: 2px solid var(--blue);
+      background: #ffffff;
+      color: var(--blue);
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0 var(--blue);
+    }
+
+    .product-body {
+      display: grid;
+      gap: 16px;
+      padding: 18px;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .spec {
+      border: 2px solid rgba(0, 51, 160, 0.24);
+      border-radius: 6px;
+      padding: 8px;
+      background: #f8faff;
+      font-family: "JetBrains Mono", monospace;
+      color: var(--blue);
+    }
+
+    .category-link {
+      display: grid;
+      gap: 16px;
+      border: 3px solid var(--blue);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 18px;
+      box-shadow: 6px 6px 0 var(--blue);
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .category-link:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 var(--red);
+      background: #f8faff;
+    }
+
+    .category-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border: 2px solid var(--blue);
+      border-radius: 8px;
+      color: #ffffff;
+      background: var(--blue);
+      box-shadow: 4px 4px 0 rgba(0, 51, 160, 0.25);
+    }
+
+    .material-swatch {
+      min-height: 220px;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--blue);
+      border-radius: 8px;
+      box-shadow: 6px 6px 0 var(--blue);
+      background: #ffffff;
+    }
+
+    .material-swatch::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 2px solid var(--blue);
+      border-radius: 6px;
+      background:
+        radial-gradient(circle at 24% 20%, rgba(255,255,255,0.95) 0 9%, transparent 10%),
+        linear-gradient(135deg, var(--swatch-a), var(--swatch-b) 45%, var(--swatch-c));
+    }
+
+    .material-swatch span {
+      position: absolute;
+      left: 26px;
+      bottom: 26px;
+      z-index: 2;
+      border: 2px solid var(--blue);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--blue);
+      padding: 8px 10px;
+      box-shadow: 4px 4px 0 var(--blue);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .size-track {
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border: 2px solid var(--blue);
+      border-radius: 999px;
+      background: linear-gradient(90deg, #c8d0dd, #ffffff, #93a1b8);
+      outline: none;
+    }
+
+    .size-track::-webkit-slider-thumb {
+      appearance: none;
+      width: 30px;
+      height: 30px;
+      border: 4px solid var(--blue);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #cbd2db 42%, #576271);
+      box-shadow: 3px 3px 0 var(--blue);
+      cursor: pointer;
+    }
+
+    .bead-visual {
+      width: var(--bead-size, 54px);
+      height: var(--bead-size, 54px);
+      border: 4px solid var(--blue);
+      border-radius: 50%;
+      background: radial-gradient(circle at 28% 24%, #ffffff 0 13%, #d4d9e0 22%, #8a96a2 50%, #202a36 100%);
+      box-shadow: 16px 16px 0 rgba(0, 51, 160, 0.14);
+      transition: width 180ms ease, height 180ms ease;
+    }
+
+    .plinko-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(4, 22, 77, 0.72);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease;
+    }
+
+    .plinko-overlay.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .plinko-modal {
+      width: min(1100px, 100%);
+      max-height: min(92vh, 780px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+      overflow: auto;
+      border: 4px solid var(--blue);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 18px 18px 0 rgba(178, 34, 52, 0.95);
+    }
+
+    .plinko-side {
+      position: relative;
+      padding: clamp(24px, 4vw, 48px);
+      border-right: 4px solid var(--blue);
+      background:
+        linear-gradient(90deg, rgba(0, 51, 160, 0.07) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(0, 51, 160, 0.07) 1px, transparent 1px),
+        #ffffff;
+      background-size: 26px 26px;
+    }
+
+    .plinko-board-wrap {
+      padding: clamp(20px, 4vw, 44px);
+      background: linear-gradient(180deg, #eef3ff, #ffffff);
+    }
+
+    .plinko-board {
+      position: relative;
+      height: 520px;
+      max-height: 64vh;
+      min-height: 420px;
+      overflow: hidden;
+      border: 4px solid var(--blue);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(0, 51, 160, 0.09) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(0, 51, 160, 0.09) 1px, transparent 1px),
+        radial-gradient(circle at 50% 10%, #ffffff, #e3e8f0);
+      background-size: 28px 28px, 28px 28px, 100% 100%;
+      box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.6);
+    }
+
+    .peg {
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--blue);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #aeb8c5 55%, #546171);
+      box-shadow: 3px 3px 0 rgba(0, 51, 160, 0.2);
+      transform: translate(-50%, -50%);
+    }
+
+    .plinko-ball {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--blue);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 24%, #ffffff, #d9dee6 36%, #5d6874 72%, #111822);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.95), 5px 5px 0 rgba(0, 51, 160, 0.22);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      z-index: 3;
+    }
+
+    .plinko-bins {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 82px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 4px solid var(--blue);
+      background: #ffffff;
+    }
+
+    .plinko-bin {
+      display: grid;
+      place-items: center;
+      border-left: 3px solid var(--blue);
+      color: var(--blue);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .plinko-bin:first-child {
+      border-left: 0;
+    }
+
+    .plinko-bin.is-winner {
+      color: #ffffff;
+      background: var(--red);
+    }
+
+    .deal-result {
+      min-height: 116px;
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      border: 3px solid var(--blue);
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 18px;
+      color: var(--blue);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 4;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .plinko-modal {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-block: 56px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.72)),
+          url("https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/original/carousel/40/ball-chain-spools--rolls-hero-image__75059.jpg?c=2") center / cover no-repeat;
+      }
+
+      .quick-shop {
+        margin-bottom: 0;
+      }
+
+      .plinko-side {
+        border-right: 0;
+        border-bottom: 4px solid var(--blue);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .chrome-text {
+        -webkit-text-stroke-width: 1px;
+        text-shadow: 1px 1px 0 #ffffff, 3px 3px 0 var(--blue), 5px 5px 0 rgba(178, 34, 52, 0.45);
+      }
+
+      .hero-title {
+        font-size: clamp(3.1rem, 18vw, 5rem);
+      }
+
+      .quick-row {
+        grid-template-columns: 56px 1fr;
+      }
+
+      .quick-row .btn {
+        grid-column: 1 / -1;
+      }
+
+      .product-card {
+        grid-template-rows: minmax(220px, 250px) auto;
+      }
+
+      .plinko-board {
+        min-height: 390px;
+        max-height: 58vh;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <div id="plinkoOverlay" class="plinko-overlay" role="dialog" aria-modal="true" aria-labelledby="plinkoTitle">
+    <section class="plinko-modal">
+      <button id="closePlinko" class="btn icon-button close-modal" aria-label="Close deal game">
+        <i class="ph ph-x text-xl"></i>
+      </button>
+      <div class="plinko-side">
+        <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing logo" class="w-64 mb-8">
+        <span class="micro-label mb-6"><i class="ph ph-sparkle"></i> New visitor deal drop</span>
+        <h2 id="plinkoTitle" class="font-display text-5xl md:text-7xl font-black uppercase leading-none chrome-text mb-6">Drop In For Factory Pricing</h2>
+        <p class="text-lg font-bold text-[var(--blue-dark)] leading-relaxed mb-8">
+          Every first session gets a guaranteed code. Drop the chrome ball and unlock a live catalog incentive for spools, tools, and custom assemblies.
+        </p>
+        <div class="deal-result" id="dealResult">
+          <p class="font-mono text-xs font-extrabold uppercase tracking-[0.16em]">Awaiting drop</p>
+          <p class="font-display text-2xl font-black uppercase">Your deal code lands here.</p>
+        </div>
+        <div class="mt-7 flex flex-col sm:flex-row gap-4">
+          <button id="dropDeal" class="btn btn-primary"><i class="ph ph-target text-xl"></i> Drop For Deal</button>
+          <button id="skipDeal" class="btn"><i class="ph ph-arrow-right text-xl"></i> Shop First</button>
+        </div>
+      </div>
+      <div class="plinko-board-wrap">
+        <div class="bead-rule mb-5"></div>
+        <div id="plinkoBoard" class="plinko-board">
+          <div id="plinkoBall" class="plinko-ball"></div>
+          <div class="absolute top-4 left-1/2 -translate-x-1/2 font-mono text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--blue)] bg-white border-2 border-[var(--blue)] rounded-md px-3 py-2 shadow-[3px_3px_0_#0033a0]">Chrome start gate</div>
+          <div class="plinko-bins" id="dealBins">
+            <div class="plinko-bin">5%<br>Off</div>
+            <div class="plinko-bin">10%<br>Off</div>
+            <div class="plinko-bin">15%<br>Off</div>
+            <div class="plinko-bin">Free<br>Ship</div>
+            <div class="plinko-bin">Bulk<br>Tier</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page-shell">
+    <div class="bead-rule"></div>
+
+    <header class="site-header">
+      <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 h-[86px] flex items-center justify-between gap-4">
+        <a href="#" class="flex items-center gap-4 min-w-0">
+          <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="w-44 sm:w-56 shrink-0">
+          <span class="hidden xl:inline-flex micro-label">Made in the USA since 1938</span>
+        </a>
+        <nav class="hidden lg:flex items-center gap-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.1em] text-[var(--blue)]">
+          <a class="px-3 py-2 rounded-md hover:bg-[var(--blue)] hover:text-white" href="#products">Products</a>
+          <a class="px-3 py-2 rounded-md hover:bg-[var(--blue)] hover:text-white" href="#categories">Catalog</a>
+          <a class="px-3 py-2 rounded-md hover:bg-[var(--blue)] hover:text-white" href="#finder">Size Finder</a>
+          <a class="px-3 py-2 rounded-md hover:bg-[var(--blue)] hover:text-white" href="#materials">Materials</a>
+        </nav>
+        <div class="flex items-center gap-2">
+          <button class="btn icon-button hidden sm:inline-flex" aria-label="Search"><i class="ph ph-magnifying-glass text-xl"></i></button>
+          <button id="openDeal" class="btn hidden md:inline-flex"><i class="ph ph-gift text-lg"></i> Deal Drop</button>
+          <button class="btn btn-primary icon-button" aria-label="Cart"><i class="ph ph-tote text-xl"></i></button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-12 hero-grid">
+          <div>
+            <span class="micro-label mb-8"><i class="ph ph-factory"></i> Factory direct industrial chain</span>
+            <h1 class="hero-title font-display font-black chrome-text mb-8">Ball<br>Chain</h1>
+            <p class="hero-copy text-xl sm:text-2xl font-extrabold leading-tight mb-9">
+              The world catalog for ball chain, bead chain, dog tags, connectors, and precision assemblies, sharpened into a premium American manufacturing brand.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 mb-10">
+              <a href="#products" class="btn btn-primary"><i class="ph ph-shopping-bag-open text-xl"></i> Shop Featured</a>
+              <a href="#finder" class="btn"><i class="ph ph-ruler text-xl"></i> Find Your Size</a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl">
+              <div class="metal-panel p-4">
+                <p class="font-mono text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--blue)]">Founded</p>
+                <p class="font-display text-3xl font-black text-[var(--blue-dark)]">1938</p>
+              </div>
+              <div class="metal-panel p-4">
+                <p class="font-mono text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--blue)]">Catalog</p>
+                <p class="font-display text-3xl font-black text-[var(--blue-dark)]">1K+</p>
+              </div>
+              <div class="metal-panel p-4">
+                <p class="font-mono text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--blue)]">Orders</p>
+                <p class="font-display text-3xl font-black text-[var(--blue-dark)]">Bulk</p>
+              </div>
+              <div class="metal-panel p-4">
+                <p class="font-mono text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--blue)]">Supply</p>
+                <p class="font-display text-3xl font-black text-[var(--blue-dark)]">USA</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="metal-panel quick-shop p-5">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h2 class="font-display text-2xl font-black uppercase text-[var(--blue-dark)]">Fast Catalog</h2>
+              <span class="font-mono text-xs font-extrabold uppercase text-[var(--red)]">Live style mock</span>
+            </div>
+            <div class="quick-row">
+              <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/6/1330/3-Stainless-Steel-ball-chain-roll-picture-1__44674.1621429561.jpg?c=2" alt="#3 Stainless Steel Ball Chain Spool" class="h-16 w-16 object-contain">
+              <div>
+                <p class="font-display text-lg font-black uppercase leading-tight">#3 Stainless Spool</p>
+                <p class="font-mono text-[11px] font-bold uppercase text-[var(--blue)]">100 ft to 2000 ft</p>
+              </div>
+              <a class="btn !min-h-10 !px-3 !py-2" href="#products">View</a>
+            </div>
+            <div class="quick-row">
+              <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/27/1336/6-Nickel-Plated-Steel-Ball-Chain-Spool__25993.1621440131.jpg?c=2" alt="#6 Nickel Plated Steel Ball Chain Spool" class="h-16 w-16 object-contain">
+              <div>
+                <p class="font-display text-lg font-black uppercase leading-tight">#6 Nickel Spool</p>
+                <p class="font-mono text-[11px] font-bold uppercase text-[var(--blue)]">1/8 in bead diameter</p>
+              </div>
+              <a class="btn !min-h-10 !px-3 !py-2" href="#products">View</a>
+            </div>
+            <div class="quick-row">
+              <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/310/1585/pliers_with_sale__17981.1777725501.jpg?c=2" alt="#10 Combination Pliers with Cutting Tool" class="h-16 w-16 object-contain">
+              <div>
+                <p class="font-display text-lg font-black uppercase leading-tight">#10 Pliers</p>
+                <p class="font-mono text-[11px] font-bold uppercase text-[var(--blue)]">Splicing and cutting</p>
+              </div>
+              <a class="btn !min-h-10 !px-3 !py-2" href="#products">View</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="products" class="py-20 sm:py-28 px-4 sm:px-6">
+        <div class="max-w-screen-2xl mx-auto">
+          <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+            <div>
+              <span class="micro-label mb-5"><i class="ph ph-seal-check"></i> Same featured products, upgraded</span>
+              <h2 class="font-display text-5xl md:text-7xl font-black uppercase leading-none text-[var(--blue-dark)]">Featured Products</h2>
+            </div>
+            <p class="max-w-xl text-lg font-bold text-[var(--blue-dark)]">
+              Real homepage products and price ranges, presented like premium industrial objects with clear size, finish, and bulk buying signals.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-7">
+            <article class="product-card">
+              <div class="product-media">
+                <span class="product-kicker">Best seller</span>
+                <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/6/1330/3-Stainless-Steel-ball-chain-roll-picture-1__44674.1621429561.jpg?c=2" alt="#3 Stainless Steel Ball Chain Spool">
+              </div>
+              <div class="product-body">
+                <div>
+                  <p class="font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">SPOOL-03-SS</p>
+                  <h3 class="font-display text-2xl font-black uppercase leading-tight text-[var(--blue-dark)]">#3 Stainless Steel Ball Chain Spool</h3>
+                </div>
+                <div class="spec-grid">
+                  <div class="spec"><b>Size</b><br>3/32 in, 2.4 mm</div>
+                  <div class="spec"><b>Length</b><br>100 ft to 2000 ft</div>
+                  <div class="spec"><b>Finish</b><br>Stainless steel</div>
+                  <div class="spec"><b>Use</b><br>Tags, pulls, ID</div>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="font-mono text-xl font-extrabold text-[var(--red)]">$33.17 - $342.40</p>
+                  <button class="btn btn-primary !min-h-10 !px-3 !py-2">Options</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card">
+              <div class="product-media">
+                <span class="product-kicker">Factory direct</span>
+                <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/27/1336/6-Nickel-Plated-Steel-Ball-Chain-Spool__25993.1621440131.jpg?c=2" alt="#6 Nickel Plated Steel Ball Chain Spool">
+              </div>
+              <div class="product-body">
+                <div>
+                  <p class="font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">SPOOL-06-NPS</p>
+                  <h3 class="font-display text-2xl font-black uppercase leading-tight text-[var(--blue-dark)]">#6 Nickel Plated Steel Ball Chain Spool</h3>
+                </div>
+                <div class="spec-grid">
+                  <div class="spec"><b>Size</b><br>1/8 in, 3.2 mm</div>
+                  <div class="spec"><b>Length</b><br>100 ft to 2,000 ft</div>
+                  <div class="spec"><b>Finish</b><br>Nickel plated</div>
+                  <div class="spec"><b>Use</b><br>Key chains, pulls</div>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="font-mono text-xl font-extrabold text-[var(--red)]">$22.00 - $234.99</p>
+                  <button class="btn btn-primary !min-h-10 !px-3 !py-2">Options</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card">
+              <div class="product-media">
+                <span class="product-kicker">Popular spool</span>
+                <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/44/83/ball_chain_spool_nickel_plated_steel_350__33619.1528213281.jpg?c=2" alt="#10 Nickel Plated Steel Ball Chain Spool">
+              </div>
+              <div class="product-body">
+                <div>
+                  <p class="font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">SPOOL-10-NPS</p>
+                  <h3 class="font-display text-2xl font-black uppercase leading-tight text-[var(--blue-dark)]">#10 Nickel Plated Steel Ball Chain Spool</h3>
+                </div>
+                <div class="spec-grid">
+                  <div class="spec"><b>Size</b><br>3/16 in, 4.8 mm</div>
+                  <div class="spec"><b>Length</b><br>100 ft to 2,000 ft</div>
+                  <div class="spec"><b>Finish</b><br>Chrome-like nickel</div>
+                  <div class="spec"><b>Use</b><br>Shade control</div>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="font-mono text-xl font-extrabold text-[var(--red)]">$34.24 - $385.20</p>
+                  <button class="btn btn-primary !min-h-10 !px-3 !py-2">Options</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="product-card">
+              <div class="product-media">
+                <span class="product-kicker">Tooling</span>
+                <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/310/1585/pliers_with_sale__17981.1777725501.jpg?c=2" alt="#10 Combination Pliers with Cutting Tool">
+              </div>
+              <div class="product-body">
+                <div>
+                  <p class="font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">TOOL-10-PLIER</p>
+                  <h3 class="font-display text-2xl font-black uppercase leading-tight text-[var(--blue-dark)]">#10 Combination Pliers with Cutting Tool</h3>
+                </div>
+                <div class="spec-grid">
+                  <div class="spec"><b>Format</b><br>1 plier to 5 pliers</div>
+                  <div class="spec"><b>Chain</b><br>#10 compatible</div>
+                  <div class="spec"><b>Action</b><br>Splice and cut</div>
+                  <div class="spec"><b>Buyer</b><br>Install teams</div>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                  <p class="font-mono text-xl font-extrabold text-[var(--red)]">$135.00 - $1,090.00</p>
+                  <button class="btn btn-primary !min-h-10 !px-3 !py-2">Options</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <div class="bead-rule"></div>
+
+      <section id="categories" class="py-20 sm:py-28 px-4 sm:px-6 bg-white">
+        <div class="max-w-screen-2xl mx-auto">
+          <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+            <div>
+              <span class="micro-label mb-5"><i class="ph ph-stack"></i> Dense catalog, cleaner paths</span>
+              <h2 class="font-display text-5xl md:text-7xl font-black uppercase leading-none text-[var(--blue-dark)]">Shop By Category</h2>
+            </div>
+            <a href="#products" class="btn w-fit"><i class="ph ph-arrow-up-right text-xl"></i> View Popular Spools</a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-link text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Attachments &amp; Connectors</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">B couplings, hooks, open balls</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-key text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Ball Chain Key Chains</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">#3 and #6 in 4, 4.5, 6 in</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-identification-badge text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Dog Tags &amp; Accessories</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">Blank, custom, chains, silencers</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-package text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Ball Chain Spools</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">#1 through #50 plus sterling</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-scissors text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Pre-Cut Lengths</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">4 in through 18 in plus</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-circles-three text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Jewelry Chain</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">Nickel brass, stainless, sterling</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-blinds text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Roller Shade Parts</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">#10 chain, pendants, stops</p>
+              </div>
+            </a>
+            <a class="category-link" href="#">
+              <div class="category-icon"><i class="ph ph-wrench text-3xl"></i></div>
+              <div>
+                <h3 class="font-display text-2xl font-black uppercase">Plumbing Chain &amp; Parts</h3>
+                <p class="font-mono text-xs font-bold uppercase text-[var(--blue)] mt-2">Hooks, spools, pre-cut chain</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="finder" class="py-20 sm:py-28 px-4 sm:px-6 border-y-4 border-[var(--blue)] bg-[var(--paper)]">
+        <div class="max-w-screen-xl mx-auto metal-panel p-5 sm:p-8 md:p-12">
+          <div class="grid lg:grid-cols-[0.85fr_1.15fr] gap-10 items-center">
+            <div>
+              <span class="micro-label mb-5"><i class="ph ph-ruler"></i> Chain size finder</span>
+              <h2 class="font-display text-5xl md:text-7xl font-black uppercase leading-none text-[var(--blue-dark)] mb-6">Match The Bead</h2>
+              <p class="text-lg font-bold text-[var(--blue-dark)] leading-relaxed mb-8">
+                Select a standard size to see diameter, common use, and the closest featured product path.
+              </p>
+              <input id="sizeSlider" class="size-track" type="range" min="0" max="5" value="2" aria-label="Select ball chain size">
+              <div class="grid grid-cols-3 gap-2 mt-6 font-mono text-[11px] font-extrabold uppercase text-[var(--blue)]">
+                <span>#1</span>
+                <span class="text-center">#6</span>
+                <span class="text-right">#10+</span>
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-[220px_1fr] gap-8 items-center">
+              <div class="min-h-[240px] border-[3px] border-[var(--blue)] rounded-lg bg-white grid place-items-center">
+                <div id="beadVisual" class="bead-visual"></div>
+              </div>
+              <div>
+                <p id="sizeName" class="font-display text-6xl font-black uppercase text-[var(--blue)] leading-none">#6</p>
+                <div class="bead-rule my-5"></div>
+                <div class="grid gap-3">
+                  <p class="font-mono text-sm font-extrabold uppercase text-[var(--blue)]">Diameter: <span id="sizeDiameter">1/8 in, 3.2 mm</span></p>
+                  <p class="font-mono text-sm font-extrabold uppercase text-[var(--blue)]">Use Case: <span id="sizeUse">Key chains, pulls, medium tags</span></p>
+                  <p class="font-mono text-sm font-extrabold uppercase text-[var(--blue)]">Recommended: <span id="sizeProduct">#6 Nickel Plated Steel Ball Chain Spool</span></p>
+                </div>
+                <button class="btn btn-primary mt-7"><i class="ph ph-shopping-cart text-xl"></i> Shop This Size</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="materials" class="py-20 sm:py-28 px-4 sm:px-6 bg-white">
+        <div class="max-w-screen-2xl mx-auto">
+          <div class="text-center mb-12">
+            <span class="micro-label mb-5"><i class="ph ph-cube"></i> Material library</span>
+            <h2 class="font-display text-5xl md:text-7xl font-black uppercase leading-none text-[var(--blue-dark)]">Finish System</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="material-swatch" style="--swatch-a:#ffffff;--swatch-b:#aeb7c2;--swatch-c:#202936;"><span>Stainless Steel</span></div>
+            <div class="material-swatch" style="--swatch-a:#fff7cc;--swatch-b:#d7aa38;--swatch-c:#77510f;"><span>Brass</span></div>
+            <div class="material-swatch" style="--swatch-a:#ffe1c4;--swatch-b:#c46735;--swatch-c:#5d2416;"><span>Copper</span></div>
+            <div class="material-swatch" style="--swatch-a:#ffffff;--swatch-b:#c8d2df;--swatch-c:#4d5a6a;"><span>Nickel Plated</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-20 sm:py-28 px-4 sm:px-6 border-y-4 border-[var(--blue)] bg-[var(--paper)]">
+        <div class="max-w-screen-xl mx-auto text-center metal-panel p-8 md:p-14">
+          <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing logo" class="mx-auto w-80 mb-8">
+          <h2 class="font-display text-5xl md:text-8xl font-black uppercase chrome-text leading-none mb-8">Made Since 1938</h2>
+          <p class="max-w-3xl mx-auto text-xl md:text-2xl font-extrabold text-[var(--blue-dark)] leading-tight">
+            A fourth generation American manufacturer in Mount Vernon, New York, framed for modern buyers who care about materials, provenance, speed, and repeatable quality.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-[var(--blue-dark)] text-white">
+      <div class="bead-rule"></div>
+      <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-14 grid md:grid-cols-[1.2fr_2fr] gap-10">
+        <div>
+          <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="w-72 mb-6 bg-white p-2 border-2 border-white">
+          <p class="font-bold leading-relaxed text-white/85">
+            741 South Fulton Avenue<br>
+            Mount Vernon, NY 10550<br>
+            914-664-7500
+          </p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-8">
+          <div>
+            <h3 class="font-mono text-sm font-extrabold uppercase tracking-[0.12em] mb-4">Shop</h3>
+            <ul class="space-y-2 font-bold text-white/80">
+              <li><a href="#">Ball Chain Spools</a></li>
+              <li><a href="#">Dog Tags</a></li>
+              <li><a href="#">Connectors</a></li>
+              <li><a href="#">Key Chains</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-mono text-sm font-extrabold uppercase tracking-[0.12em] mb-4">Support</h3>
+            <ul class="space-y-2 font-bold text-white/80">
+              <li><a href="#">Chain Sizes</a></li>
+              <li><a href="#">Chain Finishes</a></li>
+              <li><a href="#">ISO Certificate</a></li>
+              <li><a href="#">Request Quote</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-mono text-sm font-extrabold uppercase tracking-[0.12em] mb-4">Dispatch</h3>
+            <div class="flex">
+              <input class="min-w-0 flex-1 border-2 border-white bg-white text-[var(--blue-dark)] font-mono text-xs font-extrabold uppercase px-3 py-3 outline-none" type="email" placeholder="Email address">
+              <button class="border-2 border-l-0 border-white bg-[var(--red)] px-4" aria-label="Subscribe">
+                <i class="ph ph-arrow-right text-2xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('plinkoOverlay');
+    const dropDeal = document.getElementById('dropDeal');
+    const openDeal = document.getElementById('openDeal');
+    const closePlinko = document.getElementById('closePlinko');
+    const skipDeal = document.getElementById('skipDeal');
+    const board = document.getElementById('plinkoBoard');
+    const ball = document.getElementById('plinkoBall');
+    const bins = Array.from(document.querySelectorAll('.plinko-bin'));
+    const dealResult = document.getElementById('dealResult');
+
+    const deals = [
+      { label: '5% off', code: 'BCM5', detail: 'Applies to featured catalog items.' },
+      { label: '10% off', code: 'CHAIN10', detail: 'A clean starter code for spools and accessories.' },
+      { label: '15% off', code: 'FACTORY15', detail: 'The premium landing spot. Nice drop.' },
+      { label: 'Free shipping', code: 'SHIPUSA', detail: 'Domestic order incentive for continental US buyers.' },
+      { label: 'Bulk tier', code: 'BULK1938', detail: 'Request factory tier pricing for volume orders.' }
+    ];
+
+    function showPlinko() {
+      overlay.classList.add('is-visible');
+      document.body.classList.add('plinko-open');
+    }
+
+    function hidePlinko() {
+      overlay.classList.remove('is-visible');
+      document.body.classList.remove('plinko-open');
+    }
+
+    function buildPegs() {
+      const rows = [
+        [20, 40, 60, 80],
+        [30, 50, 70],
+        [20, 40, 60, 80],
+        [30, 50, 70],
+        [20, 40, 60, 80],
+        [30, 50, 70]
+      ];
+      rows.forEach((row, rowIndex) => {
+        row.forEach((left) => {
+          const peg = document.createElement('span');
+          peg.className = 'peg';
+          peg.style.left = `${left}%`;
+          peg.style.top = `${18 + rowIndex * 10}%`;
+          board.appendChild(peg);
+        });
+      });
+    }
+
+    function resetBins() {
+      bins.forEach((bin) => bin.classList.remove('is-winner'));
+    }
+
+    function runDrop() {
+      if (dropDeal.dataset.running === 'true') return;
+      dropDeal.dataset.running = 'true';
+      dropDeal.innerHTML = '<i class="ph ph-spinner-gap text-xl"></i> Dropping';
+      resetBins();
+      dealResult.innerHTML = '<p class="font-mono text-xs font-extrabold uppercase tracking-[0.16em]">Ball in motion</p><p class="font-display text-2xl font-black uppercase">Calculating factory luck.</p>';
+
+      const winnerIndex = Math.floor(Math.random() * deals.length);
+      const finalLeft = [10, 30, 50, 70, 90][winnerIndex];
+      const wobbleA = finalLeft > 50 ? finalLeft - 16 : finalLeft + 16;
+      const wobbleB = finalLeft > 50 ? finalLeft + 8 : finalLeft - 8;
+
+      ball.style.opacity = '1';
+      ball.animate([
+        { left: '50%', top: '8%' },
+        { left: '43%', top: '22%' },
+        { left: '58%', top: '34%' },
+        { left: `${wobbleA}%`, top: '48%' },
+        { left: `${wobbleB}%`, top: '62%' },
+        { left: `${finalLeft}%`, top: '78%' }
+      ], {
+        duration: 2600,
+        easing: 'cubic-bezier(.19,.76,.24,1)',
+        fill: 'forwards'
+      });
+
+      window.setTimeout(() => {
+        const deal = deals[winnerIndex];
+        bins[winnerIndex].classList.add('is-winner');
+        dealResult.innerHTML = `
+          <p class="font-mono text-xs font-extrabold uppercase tracking-[0.16em]">${deal.label} unlocked</p>
+          <p class="font-display text-4xl font-black uppercase text-[var(--red)]">${deal.code}</p>
+          <p class="font-bold text-[var(--blue-dark)]">${deal.detail}</p>
+        `;
+        dropDeal.innerHTML = '<i class="ph ph-check-circle text-xl"></i> Deal Unlocked';
+        dropDeal.dataset.running = 'false';
+      }, 2700);
+    }
+
+    const sizeData = [
+      { name: '#1', diameter: '1/16 in, 1.5 mm', use: 'Tiny tags, light ID loops', product: '#1 Ball Chain Pre-Cut Lengths', px: 28 },
+      { name: '#3', diameter: '3/32 in, 2.4 mm', use: 'Dog tags, ID tags, retail pulls', product: '#3 Stainless Steel Ball Chain Spool', px: 44 },
+      { name: '#6', diameter: '1/8 in, 3.2 mm', use: 'Key chains, pulls, medium tags', product: '#6 Nickel Plated Steel Ball Chain Spool', px: 62 },
+      { name: '#8', diameter: '5/32 in, 4.0 mm', use: 'Heavier lanyards and custom assemblies', product: '#8 Ball Chain Spools', px: 78 },
+      { name: '#10', diameter: '3/16 in, 4.8 mm', use: 'Roller shades, vertical blinds, fixtures', product: '#10 Nickel Plated Steel Ball Chain Spool', px: 96 },
+      { name: '#13', diameter: '1/4 in, 6.4 mm', use: 'Industrial control pulls and heavy fixtures', product: '#13 Ball Chain Spools', px: 120 }
+    ];
+
+    const sizeSlider = document.getElementById('sizeSlider');
+    const beadVisual = document.getElementById('beadVisual');
+    const sizeName = document.getElementById('sizeName');
+    const sizeDiameter = document.getElementById('sizeDiameter');
+    const sizeUse = document.getElementById('sizeUse');
+    const sizeProduct = document.getElementById('sizeProduct');
+
+    function updateSize(index) {
+      const size = sizeData[index];
+      beadVisual.style.setProperty('--bead-size', `${size.px}px`);
+      sizeName.textContent = size.name;
+      sizeDiameter.textContent = size.diameter;
+      sizeUse.textContent = size.use;
+      sizeProduct.textContent = size.product;
+    }
+
+    buildPegs();
+    updateSize(Number(sizeSlider.value));
+
+    window.addEventListener('load', () => {
+      window.setTimeout(showPlinko, 650);
+    });
+    dropDeal.addEventListener('click', runDrop);
+    openDeal.addEventListener('click', showPlinko);
+    closePlinko.addEventListener('click', hidePlinko);
+    skipDeal.addEventListener('click', hidePlinko);
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) hidePlinko();
+    });
+    sizeSlider.addEventListener('input', (event) => updateSize(Number(event.target.value)));
+  </script>
+</body>
+</html>
