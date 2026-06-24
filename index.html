@@ -6,6 +6,7 @@
   <title>Ball Chain Manufacturing | Premium Industrial Catalog</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -190,9 +191,8 @@
       overflow: hidden;
       border-bottom: 4px solid var(--blue);
       background:
-        radial-gradient(circle at 84% 20%, rgba(255,255,255,0.95) 0 8%, rgba(205,214,226,0.72) 18%, transparent 34%),
-        radial-gradient(circle at 78% 76%, rgba(178,34,52,0.1), transparent 26%),
-        linear-gradient(135deg, #ffffff 0%, #f7f9fc 46%, #dfe5ee 100%);
+        linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.9) 45%, rgba(247,249,252,0.72) 100%),
+        linear-gradient(135deg, #ffffff 0%, #f7f9fc 52%, #e2e8f1 100%);
     }
 
     .hero::before {
@@ -209,24 +209,27 @@
     }
 
     .hero::after {
-      content: "";
+      content: none;
+    }
+
+    .webgl-stage {
       position: absolute;
-      right: -8vw;
-      top: 6%;
-      width: min(54vw, 780px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 34% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.35) 18%, transparent 19%),
-        repeating-radial-gradient(circle at 50% 50%, transparent 0 32px, rgba(0,51,160,0.08) 34px 38px),
-        linear-gradient(145deg, rgba(255,255,255,0.7), rgba(82,91,106,0.12));
-      opacity: 0.75;
+      inset: 0;
+      z-index: 0;
       pointer-events: none;
+      opacity: 0.68;
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 30%, #000 54%, #000 100%);
+    }
+
+    #chainArtCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
     .hero-grid {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       display: grid;
       grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
       gap: clamp(28px, 5vw, 76px);
@@ -296,130 +299,74 @@
 
     .hero-stage {
       position: relative;
-      min-height: 620px;
       display: grid;
+      gap: 18px;
       align-items: center;
+      justify-items: center;
     }
 
     .hero-stage::before {
       content: "";
       position: absolute;
-      inset: 8% 2% 8% 12%;
-      border-radius: 999px;
+      inset: 8% 6% 5% 3%;
+      border-radius: 20px;
       background:
-        radial-gradient(circle at 34% 26%, rgba(255,255,255,0.95), rgba(216,221,229,0.18) 22%, transparent 44%),
-        linear-gradient(145deg, rgba(255,255,255,0.64), rgba(42,49,61,0.16));
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 34px 70px rgba(4,22,77,0.2);
-      transform: rotate(-7deg);
-    }
-
-    .hero-product {
-      position: relative;
-      z-index: 2;
-      margin-left: auto;
-      width: min(520px, 92%);
-      border: 1px solid rgba(255,255,255,0.82);
-      border-radius: 18px;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,0.96), rgba(236,241,248,0.88)),
-        radial-gradient(circle at 60% 0%, rgba(255,255,255,0.88), transparent 38%);
-      box-shadow: 0 30px 72px rgba(4,22,77,0.26), 0 0 0 3px rgba(0,51,160,0.12);
-      overflow: hidden;
-    }
-
-    .hero-product-media {
-      min-height: 360px;
-      display: grid;
-      place-items: center;
-      padding: 34px 34px 18px;
-      background:
-        linear-gradient(90deg, rgba(0,51,160,0.055) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(0,51,160,0.055) 1px, transparent 1px),
-        radial-gradient(circle at 50% 12%, #ffffff, #e3e8f0 68%);
-      background-size: 24px 24px, 24px 24px, 100% 100%;
-    }
-
-    .hero-product-media img {
-      max-height: 330px;
-      width: min(88%, 390px);
-      object-fit: contain;
-      filter: drop-shadow(26px 34px 32px rgba(4,22,77,0.28));
-    }
-
-    .hero-product-body {
-      display: grid;
-      gap: 16px;
-      border-top: 3px solid var(--blue);
-      background: rgba(255,255,255,0.94);
-      padding: 22px;
-    }
-
-    .hero-mini {
-      position: absolute;
-      z-index: 3;
-      display: grid;
-      grid-template-columns: 82px 1fr;
-      align-items: center;
-      gap: 12px;
-      width: min(310px, 48%);
-      border: 2px solid rgba(0,51,160,0.28);
-      border-radius: 14px;
-      background: rgba(255,255,255,0.92);
-      box-shadow: 0 20px 48px rgba(4,22,77,0.18);
-      padding: 12px;
+        linear-gradient(135deg, rgba(255,255,255,0.68), rgba(231,237,246,0.44));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8), 0 24px 60px rgba(4,22,77,0.12);
       backdrop-filter: blur(10px);
     }
 
-    .hero-mini img {
-      width: 82px;
-      height: 82px;
-      object-fit: contain;
-      filter: drop-shadow(12px 14px 16px rgba(4,22,77,0.22));
-    }
-
-    .hero-mini.top {
-      top: 6%;
-      left: 0;
-    }
-
-    .hero-mini.bottom {
-      right: 0;
-      bottom: 6%;
-    }
-
-    .premium-badge {
-      display: inline-flex;
-      width: fit-content;
+    .deal-caption {
+      position: relative;
+      z-index: 3;
+      width: min(580px, 100%);
+      display: flex;
       align-items: center;
-      gap: 8px;
-      border: 1px solid rgba(255,255,255,0.9);
-      border-radius: 999px;
-      background: var(--ink);
-      color: #ffffff;
-      padding: 8px 12px;
-      box-shadow: 0 10px 28px rgba(4,22,77,0.18);
+      justify-content: space-between;
+      gap: 14px;
+      border: 2px solid rgba(0,51,160,0.22);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 16px 34px rgba(4,22,77,0.12);
+      padding: 12px 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .deal-caption strong {
+      color: var(--blue-dark);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .deal-caption span {
+      color: var(--red);
       font-family: "JetBrains Mono", monospace;
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .product-card {
       position: relative;
       display: grid;
-      grid-template-rows: minmax(250px, 290px) auto;
+      grid-template-rows: 190px auto;
       overflow: hidden;
-      border: 3px solid var(--blue);
+      border: 2px solid rgba(0,51,160,0.24);
       border-radius: 8px;
       background: #ffffff;
-      box-shadow: var(--shadow);
-      transition: transform 180ms ease, box-shadow 180ms ease;
+      box-shadow: 0 16px 34px rgba(4,22,77,0.08);
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
 
     .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 10px 10px 0 var(--red);
+      transform: translateY(-3px);
+      border-color: var(--blue);
+      box-shadow: 0 18px 42px rgba(4,22,77,0.14);
     }
 
     .product-media {
@@ -428,31 +375,30 @@
       align-items: center;
       justify-content: center;
       background:
-        linear-gradient(90deg, rgba(0, 51, 160, 0.06) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(0, 51, 160, 0.06) 1px, transparent 1px),
-        radial-gradient(circle at 50% 15%, rgba(255,255,255,0.95), rgba(215,222,232,0.7));
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,0.96), rgba(238,242,248,0.82));
       background-size: 24px 24px, 24px 24px, 100% 100%;
-      border-bottom: 3px solid var(--blue);
+      border-bottom: 2px solid rgba(0,51,160,0.18);
       overflow: hidden;
     }
 
     .product-media img {
-      width: min(78%, 310px);
-      height: 86%;
+      width: min(72%, 240px);
+      height: 78%;
       object-fit: contain;
-      filter: drop-shadow(18px 18px 24px rgba(4, 22, 77, 0.28));
+      filter: drop-shadow(12px 14px 18px rgba(4, 22, 77, 0.18));
       transition: transform 240ms ease;
     }
 
     .product-card:hover .product-media img {
-      transform: scale(1.04) rotate(-1deg);
+      transform: scale(1.025);
     }
 
     .product-kicker {
       position: absolute;
       top: 12px;
       left: 12px;
-      border: 2px solid var(--blue);
+      z-index: 2;
+      border: 1px solid rgba(0,51,160,0.24);
       background: #ffffff;
       color: var(--blue);
       padding: 6px 8px;
@@ -461,7 +407,7 @@
       font-size: 10px;
       font-weight: 800;
       text-transform: uppercase;
-      box-shadow: 3px 3px 0 var(--blue);
+      box-shadow: none;
     }
 
     .product-body {
@@ -477,7 +423,7 @@
     }
 
     .spec {
-      border: 2px solid rgba(0, 51, 160, 0.24);
+      border: 1px solid rgba(0, 51, 160, 0.18);
       border-radius: 6px;
       padding: 8px;
       background: #f8faff;
@@ -584,59 +530,21 @@
     }
 
     .plinko-overlay {
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
-      z-index: 80;
-      width: min(330px, calc(100vw - 48px));
+      position: relative;
+      z-index: 3;
+      width: min(580px, 100%);
       display: block;
+      margin: 0 auto;
       padding: 0;
       background: transparent;
       backdrop-filter: none;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 200ms ease;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .plinko-overlay.is-visible {
       opacity: 1;
       pointer-events: auto;
-    }
-
-    .deal-teaser {
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
-      z-index: 79;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      border: 3px solid var(--blue);
-      border-radius: 999px;
-      background: #ffffff;
-      color: var(--blue);
-      box-shadow: 8px 8px 0 rgba(0,51,160,0.22), 0 18px 42px rgba(4,22,77,0.16);
-      padding: 12px 16px;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(8px);
-      transition: opacity 180ms ease, transform 180ms ease, background 160ms ease, color 160ms ease;
-    }
-
-    .deal-teaser.is-visible {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-
-    .deal-teaser:hover {
-      background: var(--blue);
-      color: #ffffff;
     }
 
     .plinko-overlay::before {
@@ -653,17 +561,16 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      height: 360px;
+      height: clamp(460px, 62vh, 560px);
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      border: 2px solid rgba(0,51,160,0.26);
       border-radius: 14px;
-      padding: 6px;
-      background: linear-gradient(135deg, #ffffff 0%, #a8afb8 42%, #2c3138 50%, #b9c0c9 62%, #ffffff 100%);
-      box-shadow:
-        0 18px 54px rgba(4,22,77,0.34),
-        inset 2px 2px 5px rgba(255,255,255,0.8),
-        inset -2px -2px 5px rgba(0,0,0,0.8),
-        0 0 0 2px rgba(255,255,255,0.72);
+      padding: 0;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 22px 50px rgba(4,22,77,0.16);
+      backdrop-filter: blur(12px);
       animation: modalEnter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
 
@@ -686,9 +593,9 @@
       top: -12px;
       right: -12px;
       z-index: 5;
-      width: 30px;
-      height: 30px;
-      display: grid;
+      width: 1px;
+      height: 1px;
+      display: none;
       place-items: center;
       border: 0;
       border-radius: 50%;
@@ -715,42 +622,41 @@
 
     .game-header {
       position: relative;
-      height: 42px;
+      height: 58px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 18px;
       overflow: hidden;
-      border-bottom: 4px solid #000;
+      border-bottom: 2px solid rgba(0,51,160,0.16);
       padding: 0 14px;
       background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.16), transparent 52%),
-        linear-gradient(90deg, #0b0e13, #242a31 48%, #0b0e13);
+        linear-gradient(90deg, rgba(255,255,255,0.94), rgba(242,246,252,0.94));
     }
 
     .game-header::before {
       content: "";
       position: absolute;
       inset: 0;
-      opacity: 0.14;
-      background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.16) 45%, transparent 60%);
+      opacity: 0.2;
+      background: linear-gradient(110deg, transparent 0%, rgba(0,51,160,0.08) 45%, transparent 60%);
     }
 
     .game-header h2 {
-      font-size: 1rem;
+      font-size: clamp(1.25rem, 2.5vw, 1.9rem);
       line-height: 1;
       white-space: nowrap;
     }
 
     .game-header img {
-      width: 58px;
+      width: 76px;
     }
 
     .game-flag {
       position: relative;
       z-index: 1;
-      width: 32px;
-      height: 22px;
+      width: 46px;
+      height: 30px;
       display: grid;
       grid-template-rows: 1fr 1fr;
       border: 1px solid #656a72;
@@ -782,12 +688,9 @@
 
     .text-chrome {
       font-family: "Oswald", sans-serif;
-      color: transparent;
-      background: linear-gradient(to bottom, #ffffff 0%, #b5b5b5 40%, #333333 45%, #111111 50%, #8a8a8a 55%, #ffffff 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-stroke: 1px rgba(0,0,0,0.55);
-      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.85));
+      color: var(--blue-dark);
+      -webkit-text-stroke: 0;
+      filter: none;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
@@ -806,16 +709,19 @@
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
-      border: 2px solid #000;
+      border: 0;
       background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08), transparent 38%),
-        var(--gunmetal);
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255,255,255,0.035) 1px, transparent 1px),
+        radial-gradient(circle at 50% 10%, rgba(255,255,255,0.1), transparent 42%),
+        #121721;
+      background-size: 20px 20px, 20px 20px, 100% 100%, 100% 100%;
+      box-shadow: inset 0 0 34px rgba(0,0,0,0.38);
     }
 
     .game-drop-wrap {
       position: absolute;
-      top: 10px;
+      top: 18px;
       left: 0;
       right: 0;
       z-index: 4;
@@ -828,14 +734,11 @@
       position: relative;
       overflow: hidden;
       border: 0;
-      border-radius: 4px;
-      background: linear-gradient(to bottom, #ffffff 0%, #cccccc 30%, #555555 50%, #999999 55%, #e6e6e6 100%);
-      box-shadow:
-        inset 0 2px 4px rgba(255,255,255,0.9),
-        inset 0 -2px 4px rgba(0,0,0,0.6),
-        0 4px 8px rgba(0,0,0,0.6),
-        0 0 0 2px #000;
-      color: #000;
+      border: 2px solid #ffffff;
+      border-radius: 999px;
+      background: var(--blue);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.24);
+      color: #ffffff;
       font-family: "Oswald", sans-serif;
       font-weight: 700;
       text-transform: uppercase;
@@ -871,22 +774,18 @@
     }
 
     .btn-patriotic {
-      padding: 4px;
-      background: linear-gradient(to right, var(--patriot-red) 0%, var(--patriot-red) 33%, #fff 33%, #fff 66%, var(--patriot-blue) 66%, var(--patriot-blue) 100%);
-      box-shadow:
-        inset 0 2px 4px rgba(255,255,255,0.6),
-        inset 0 -2px 4px rgba(0,0,0,0.6),
-        0 5px 15px rgba(0,0,0,0.5),
-        0 0 0 3px #111;
+      padding: 0;
+      background: var(--blue);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.24);
     }
 
     .btn-patriotic .btn-text {
       display: inline-block;
-      border-radius: 2px;
-      background: #111;
+      border-radius: 999px;
+      background: transparent;
       color: #fff;
-      padding: 5px 12px;
-      font-size: 0.8rem;
+      padding: 11px 20px;
+      font-size: 0.96rem;
       letter-spacing: 0.1em;
     }
 
@@ -895,8 +794,8 @@
       flex: 1;
       min-height: 0;
       background:
-        radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.72) 100%),
-        linear-gradient(180deg, #1b1f26 0%, #11151b 100%);
+        radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.56) 100%),
+        linear-gradient(180deg, #18202d 0%, #111721 100%);
     }
 
     #plinkoCanvas {
@@ -910,11 +809,11 @@
     .slot-container {
       position: relative;
       z-index: 3;
-      height: 44px;
+      height: 58px;
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      border-top: 4px solid #333;
-      background: #111;
+      border-top: 2px solid rgba(255,255,255,0.08);
+      background: #0c1119;
     }
 
     .slot {
@@ -924,13 +823,13 @@
       align-items: center;
       justify-content: center;
       gap: 3px;
-      border-right: 2px solid #333;
+      border-right: 1px solid rgba(255,255,255,0.08);
       padding: 4px;
-      background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
-      box-shadow: inset 0 5px 10px rgba(0,0,0,0.8);
+      background: transparent;
+      box-shadow: inset 0 5px 10px rgba(0,0,0,0.28);
       color: #aaa;
       font-family: "Share Tech Mono", monospace;
-      font-size: 0.52rem;
+      font-size: 0.64rem;
       text-align: center;
       text-transform: uppercase;
     }
@@ -982,6 +881,11 @@
       pointer-events: auto;
     }
 
+    .prize-banner .text-chrome {
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.28), 0 8px 18px rgba(0,0,0,0.45);
+    }
+
     .game-status {
       display: none;
       height: 0;
@@ -1010,12 +914,17 @@
         top: 40%;
       }
 
+      .webgl-stage {
+        opacity: 0.46;
+        mask-image: linear-gradient(180deg, transparent 0%, #000 32%, #000 100%);
+      }
+
       .hero-stage {
-        min-height: 560px;
+        min-height: auto;
       }
 
       .plinko-modal {
-        height: 380px;
+        height: min(620px, 72vh);
       }
     }
 
@@ -1050,22 +959,9 @@
         inset: 8% 0 16%;
       }
 
-      .hero-product {
-        width: 100%;
-      }
-
-      .hero-product-media {
-        min-height: 280px;
-      }
-
-      .hero-mini {
-        position: relative;
-        width: 100%;
-      }
-
-      .hero-mini.top,
-      .hero-mini.bottom {
-        inset: auto;
+      .deal-caption {
+        align-items: flex-start;
+        flex-direction: column;
       }
 
       .product-card {
@@ -1073,30 +969,21 @@
       }
 
       .plinko-overlay {
-        right: 12px;
-        bottom: 12px;
-        width: min(260px, calc(100vw - 24px));
-      }
-
-      .deal-teaser {
-        right: 12px;
-        bottom: 12px;
-        padding: 10px 12px;
-        font-size: 10px;
+        width: 100%;
       }
 
       .plinko-modal {
-        height: 300px;
+        height: 450px;
       }
 
       .game-header {
-        height: 38px;
+        height: 48px;
         padding: 0 10px;
         gap: 8px;
       }
 
       .game-header h2 {
-        font-size: 0.84rem;
+        font-size: 1.02rem;
         line-height: 1;
       }
 
@@ -1110,12 +997,12 @@
       }
 
       .btn-patriotic .btn-text {
-        font-size: 0.72rem;
+        font-size: 0.78rem;
         padding: 5px 9px;
       }
 
       .slot-container {
-        height: 42px;
+        height: 50px;
       }
 
       .slot {
@@ -1149,68 +1036,6 @@
 <body>
   <div class="noise"></div>
 
-  <div id="plinkoOverlay" class="plinko-overlay" role="region" aria-label="Deal plinko game">
-    <aside id="plinkoModal" class="plinko-modal" aria-describedby="plinkoDescription">
-      <button id="closePlinko" class="game-close" type="button" aria-label="Close deal game">
-        <span aria-hidden="true">×</span>
-      </button>
-
-      <header class="game-header">
-        <div class="game-flag" aria-hidden="true">
-          <div class="game-flag-stars">* * *</div>
-          <div class="game-flag-stripes"><span></span><span></span></div>
-        </div>
-        <h2 id="plinkoTitle" class="text-chrome text-xl font-black text-center flex-1">Drop For A Deal</h2>
-        <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="relative z-[1] w-16 md:w-20 opacity-85">
-      </header>
-
-      <div class="chrome-inner">
-        <div class="game-drop-wrap">
-          <button id="dropDeal" class="btn-chrome btn-patriotic" type="button">
-            <span class="btn-text">Release Chain Ball</span>
-          </button>
-        </div>
-
-        <div class="game-canvas-wrap">
-          <p id="plinkoDescription" class="sr-only">Drop a chrome ball through the plinko board to unlock a promotional deal.</p>
-          <canvas id="plinkoCanvas" aria-hidden="true"></canvas>
-        </div>
-
-        <div class="slot-container" id="dealSlots">
-          <div class="slot" data-prize="10% OFF" data-code="CHAIN10"><span class="text-gray-500">Slot 1</span><strong class="text-white text-sm">10% Off</strong></div>
-          <div class="slot" data-prize="FREE SHIPPING" data-code="SHIPUSA"><span class="text-gray-500">Slot 2</span><strong class="text-white text-sm">Free Ship</strong></div>
-          <div class="slot" data-prize="BULK BONUS" data-code="BULK1938"><span class="text-gray-500">Slot 3</span><strong class="text-yellow-400 text-sm">Bulk Bonus</strong></div>
-          <div class="slot" data-prize="20% OFF" data-code="FACTORY20"><span class="text-gray-500">Slot 4</span><strong class="text-green-400 text-sm">20% Off</strong></div>
-          <div class="slot" data-prize="MYSTERY GIFT" data-code="BCM-MYSTERY"><span class="text-gray-500">Slot 5</span><strong class="text-purple-300 text-sm">Mystery</strong></div>
-          <div class="slot" data-prize="FACTORY DIRECT" data-code="DIRECT1938"><span class="text-gray-500">Slot 6</span><strong class="text-white text-sm">Factory</strong></div>
-        </div>
-
-        <div id="prizeBanner" class="prize-banner">
-          <div class="text-chrome-sm text-sm uppercase tracking-[0.2em] mb-2 font-mono">Manufactured Result</div>
-          <h2 id="prizeText" class="text-4xl md:text-5xl text-chrome font-black mb-4">20% OFF</h2>
-          <p class="text-gray-300 text-sm mb-5 font-mono bg-black/50 p-2 border border-gray-700 w-full">PROMO CODE: <span id="prizeCode">FACTORY20</span></p>
-          <button id="claimDeal" class="btn-chrome px-8 py-2 text-lg" type="button">Claim &amp; Continue</button>
-        </div>
-      </div>
-
-      <footer class="game-status">
-        <div class="text-xs text-gray-500 font-mono tracking-widest flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          SYSTEM: ONLINE
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-grid place-items-center w-7 h-5 text-[8px] font-black text-white bg-[var(--patriot-blue)] border border-gray-600">USA</span>
-          <span class="text-chrome-sm text-xs font-bold uppercase tracking-wider">Proudly Made in the USA since 1938</span>
-        </div>
-      </footer>
-    </aside>
-  </div>
-
-  <button id="dealTeaser" class="deal-teaser" type="button" aria-label="Open deal plinko game" onclick="window.showPlinkoGame && window.showPlinkoGame()">
-    <i class="ph ph-gift text-xl"></i>
-    Drop For A Deal
-  </button>
-
   <div class="page-shell">
     <div class="bead-rule"></div>
 
@@ -1236,6 +1061,9 @@
 
     <main>
       <section class="hero">
+        <div class="webgl-stage" aria-hidden="true">
+          <canvas id="chainArtCanvas"></canvas>
+        </div>
         <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-12 hero-grid">
           <div>
             <span class="micro-label mb-8"><i class="ph ph-factory"></i> Made in USA since 1938</span>
@@ -1260,41 +1088,67 @@
             </div>
           </div>
 
-          <aside class="hero-stage" aria-label="Featured Ball Chain products">
-            <div class="hero-mini top">
-              <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/27/1336/6-Nickel-Plated-Steel-Ball-Chain-Spool__25993.1621440131.jpg?c=2" alt="#6 Nickel Plated Steel Ball Chain Spool">
-              <div>
-                <p class="font-mono text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">Popular</p>
-                <p class="font-display text-lg font-black uppercase leading-tight">#6 Nickel Spool</p>
-                <p class="font-mono text-[10px] font-bold uppercase text-[var(--blue)]">100 ft to 2,000 ft</p>
-              </div>
+          <aside class="hero-stage" aria-label="Deal plinko game">
+            <div class="deal-caption">
+              <strong>Start With A Deal Drop</strong>
+              <span>All visitors play first</span>
             </div>
 
-            <article class="hero-product">
-              <div class="hero-product-media">
-                <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/44/83/ball_chain_spool_nickel_plated_steel_350__33619.1528213281.jpg?c=2" alt="#10 Nickel Plated Steel Ball Chain Spool">
-              </div>
-              <div class="hero-product-body">
-                <span class="premium-badge"><i class="ph ph-seal-check"></i> Featured spool</span>
-                <div>
-                  <p class="font-mono text-[11px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">SPOOL-10-NPS</p>
-                  <h2 class="font-display text-3xl font-black uppercase leading-tight text-[var(--blue-dark)]">#10 Nickel Plated Steel Ball Chain Spool</h2>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="spec"><b>Size</b><br>3/16 in, 4.8 mm</div>
-                  <div class="spec"><b>Range</b><br>$34.24 - $385.20</div>
-                </div>
-                <a href="#products" class="btn btn-primary"><i class="ph ph-arrow-right text-xl"></i> Configure Options</a>
-              </div>
-            </article>
+            <div id="plinkoOverlay" class="plinko-overlay is-visible" role="region" aria-label="Deal plinko game">
+              <aside id="plinkoModal" class="plinko-modal" aria-describedby="plinkoDescription">
+                <button id="closePlinko" class="game-close" type="button" aria-label="Close deal game">
+                  <span aria-hidden="true">×</span>
+                </button>
 
-            <div class="hero-mini bottom">
-              <img src="https://cdn11.bigcommerce.com/s-xszi2drqh5/images/stencil/500x659/products/310/1585/pliers_with_sale__17981.1777725501.jpg?c=2" alt="#10 Combination Pliers with Cutting Tool">
-              <div>
-                <p class="font-mono text-[10px] font-extrabold uppercase tracking-[0.12em] text-[var(--red)]">Tooling</p>
-                <p class="font-display text-lg font-black uppercase leading-tight">#10 Pliers</p>
-                <p class="font-mono text-[10px] font-bold uppercase text-[var(--blue)]">Splice and cut</p>
-              </div>
+                <header class="game-header">
+                  <div class="game-flag" aria-hidden="true">
+                    <div class="game-flag-stars">* * *</div>
+                    <div class="game-flag-stripes"><span></span><span></span></div>
+                  </div>
+                  <h2 id="plinkoTitle" class="text-chrome font-black text-center flex-1">Drop For A Deal</h2>
+                  <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="relative z-[1] opacity-85">
+                </header>
+
+                <div class="chrome-inner">
+                  <div class="game-drop-wrap">
+                    <button id="dropDeal" class="btn-chrome btn-patriotic" type="button">
+                      <span class="btn-text">Release Chain Ball</span>
+                    </button>
+                  </div>
+
+                  <div class="game-canvas-wrap">
+                    <p id="plinkoDescription" class="sr-only">Drop a chrome ball through the plinko board to unlock a promotional deal.</p>
+                    <canvas id="plinkoCanvas" aria-hidden="true"></canvas>
+                  </div>
+
+                  <div class="slot-container" id="dealSlots">
+                    <div class="slot" data-prize="10% OFF" data-code="CHAIN10"><span class="text-gray-500">Slot 1</span><strong class="text-white text-sm">10% Off</strong></div>
+                    <div class="slot" data-prize="FREE SHIPPING" data-code="SHIPUSA"><span class="text-gray-500">Slot 2</span><strong class="text-white text-sm">Free Ship</strong></div>
+                    <div class="slot" data-prize="BULK BONUS" data-code="BULK1938"><span class="text-gray-500">Slot 3</span><strong class="text-yellow-400 text-sm">Bulk Bonus</strong></div>
+                    <div class="slot" data-prize="20% OFF" data-code="FACTORY20"><span class="text-gray-500">Slot 4</span><strong class="text-green-400 text-sm">20% Off</strong></div>
+                    <div class="slot" data-prize="MYSTERY GIFT" data-code="BCM-MYSTERY"><span class="text-gray-500">Slot 5</span><strong class="text-purple-300 text-sm">Mystery</strong></div>
+                    <div class="slot" data-prize="FACTORY DIRECT" data-code="DIRECT1938"><span class="text-gray-500">Slot 6</span><strong class="text-white text-sm">Factory</strong></div>
+                  </div>
+
+                  <div id="prizeBanner" class="prize-banner">
+                    <div class="text-chrome-sm text-sm uppercase tracking-[0.2em] mb-2 font-mono">Manufactured Result</div>
+                    <h2 id="prizeText" class="text-4xl md:text-5xl text-chrome font-black mb-4">20% OFF</h2>
+                    <p class="text-gray-300 text-sm mb-5 font-mono bg-black/50 p-2 border border-gray-700 w-full">PROMO CODE: <span id="prizeCode">FACTORY20</span></p>
+                    <button id="claimDeal" class="btn-chrome px-8 py-2 text-lg" type="button">Claim &amp; Continue</button>
+                  </div>
+                </div>
+
+                <footer class="game-status">
+                  <div class="text-xs text-gray-500 font-mono tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    SYSTEM: ONLINE
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="inline-grid place-items-center w-7 h-5 text-[8px] font-black text-white bg-[var(--patriot-blue)] border border-gray-600">USA</span>
+                    <span class="text-chrome-sm text-xs font-bold uppercase tracking-wider">Proudly Made in the USA since 1938</span>
+                  </div>
+                </footer>
+              </aside>
             </div>
           </aside>
         </div>
@@ -1304,11 +1158,11 @@
         <div class="max-w-screen-2xl mx-auto">
           <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
             <div>
-              <span class="micro-label mb-5"><i class="ph ph-seal-check"></i> Same featured products, upgraded</span>
+              <span class="micro-label mb-5"><i class="ph ph-seal-check"></i> Popular catalog products</span>
               <h2 class="font-display text-5xl md:text-7xl font-black uppercase leading-none text-[var(--blue-dark)]">Featured Products</h2>
             </div>
             <p class="max-w-xl text-lg font-bold text-[var(--blue-dark)]">
-              Real homepage products and price ranges, presented like premium industrial objects with clear size, finish, and bulk buying signals.
+              Commonly ordered spools and tools with clear size, finish, and bulk range signals.
             </p>
           </div>
 
@@ -1591,7 +1445,6 @@
     const modal = document.getElementById('plinkoModal');
     const dropDeal = document.getElementById('dropDeal');
     const openDeal = document.getElementById('openDeal');
-    const dealTeaser = document.getElementById('dealTeaser');
     const closePlinko = document.getElementById('closePlinko');
     const claimDeal = document.getElementById('claimDeal');
     const canvas = document.getElementById('plinkoCanvas');
@@ -1600,12 +1453,19 @@
     const prizeBanner = document.getElementById('prizeBanner');
     const prizeText = document.getElementById('prizeText');
     const prizeCode = document.getElementById('prizeCode');
+    const chainArtCanvas = document.getElementById('chainArtCanvas');
 
     let width = 0;
     let height = 0;
     let slotWidth = 0;
     let animationId = null;
     let dropTimeoutId = null;
+    let chainRenderer = null;
+    let chainScene = null;
+    let chainCamera = null;
+    let chainGroup = null;
+    let chainAnimationId = null;
+    let chainBeads = [];
     const pegs = [];
     const slotsCount = slots.length;
     const gravity = 0.4;
@@ -1623,33 +1483,130 @@
       lastX: 0
     };
 
-    function showPlinko() {
-      modal.classList.remove('fade-out');
-      dealTeaser.classList.remove('is-visible');
-      overlay.classList.add('is-visible');
-      window.setTimeout(() => {
-        resizeCanvas();
-        startGameLoop();
-      }, 80);
+    function initChainArt() {
+      if (!chainArtCanvas || !window.THREE || chainRenderer) return;
+
+      chainRenderer = new THREE.WebGLRenderer({
+        canvas: chainArtCanvas,
+        alpha: true,
+        antialias: true
+      });
+      chainRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      chainRenderer.setClearColor(0x000000, 0);
+
+      chainScene = new THREE.Scene();
+      chainCamera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+      chainCamera.position.set(0, 0.2, 8.8);
+
+      const ambient = new THREE.AmbientLight(0xffffff, 1.35);
+      const key = new THREE.DirectionalLight(0xffffff, 2.2);
+      key.position.set(2.5, 4, 5);
+      const rim = new THREE.DirectionalLight(0x8fb2ff, 1.25);
+      rim.position.set(-4, 1.5, -2);
+      const red = new THREE.PointLight(0xb22234, 2.2, 12);
+      red.position.set(4, -1.3, 2.5);
+      chainScene.add(ambient, key, rim, red);
+
+      chainGroup = new THREE.Group();
+      chainGroup.position.set(3.05, -0.08, 0);
+      chainScene.add(chainGroup);
+
+      const chromeMaterial = new THREE.MeshStandardMaterial({
+        color: 0xdfe5ec,
+        metalness: 1,
+        roughness: 0.18
+      });
+      const blueMaterial = new THREE.MeshStandardMaterial({
+        color: 0x0033a0,
+        metalness: 0.8,
+        roughness: 0.25
+      });
+      const redMaterial = new THREE.MeshStandardMaterial({
+        color: 0xb22234,
+        metalness: 0.55,
+        roughness: 0.32
+      });
+      const beadGeometry = new THREE.SphereGeometry(0.112, 28, 28);
+      const beadCount = 76;
+
+      for (let i = 0; i < beadCount; i++) {
+        const ratio = i / (beadCount - 1);
+        const wave = ratio * Math.PI * 5.2;
+        const material = i % 19 === 0 ? redMaterial : i % 13 === 0 ? blueMaterial : chromeMaterial;
+        const bead = new THREE.Mesh(beadGeometry, material);
+        bead.position.set(
+          (ratio - 0.5) * 6.3,
+          Math.sin(wave) * 0.58,
+          Math.cos(wave) * 0.48
+        );
+        bead.userData.baseY = bead.position.y;
+        bead.scale.setScalar(0.82 + Math.sin(ratio * Math.PI) * 0.24);
+        chainGroup.add(bead);
+        chainBeads.push(bead);
+      }
+
+      const shadowMaterial = new THREE.MeshBasicMaterial({
+        color: 0x0033a0,
+        transparent: true,
+        opacity: 0.08
+      });
+      const shadowGeometry = new THREE.TorusGeometry(2.15, 0.025, 12, 160);
+      for (let i = 0; i < 4; i++) {
+        const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
+        shadow.position.set(1.2 + i * 0.5, -0.2 + i * 0.08, -1.1 - i * 0.16);
+        shadow.rotation.set(1.18, 0.25, 0.18 + i * 0.1);
+        shadow.scale.set(1.65 + i * 0.08, 0.52 + i * 0.02, 1);
+        chainScene.add(shadow);
+      }
+
+      resizeChainArt();
+      renderChainArt();
     }
 
-    function hidePlinko() {
-      modal.classList.add('fade-out');
-      window.setTimeout(() => {
-        overlay.classList.remove('is-visible');
-        dealTeaser.classList.add('is-visible');
-        stopGameLoop();
-      }, 360);
+    function resizeChainArt() {
+      if (!chainRenderer || !chainCamera || !chainArtCanvas) return;
+      const rect = chainArtCanvas.parentElement.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
+      chainRenderer.setSize(rect.width, rect.height, false);
+      chainCamera.aspect = rect.width / rect.height;
+      chainCamera.updateProjectionMatrix();
     }
 
-    function showDealTeaser() {
-      dealTeaser.classList.add('is-visible');
+    function renderChainArt() {
+      if (!chainRenderer || !chainScene || !chainCamera || !chainGroup) return;
+      const time = performance.now() * 0.001;
+      chainGroup.rotation.y = Math.sin(time * 0.42) * 0.28;
+      chainGroup.rotation.x = Math.sin(time * 0.3) * 0.08;
+      chainGroup.rotation.z = -0.15 + Math.sin(time * 0.22) * 0.05;
+      chainBeads.forEach((bead, index) => {
+        bead.position.y = bead.userData.baseY + Math.sin(time * 1.2 + index * 0.28) * 0.035;
+      });
+      chainRenderer.render(chainScene, chainCamera);
+      chainAnimationId = requestAnimationFrame(renderChainArt);
     }
 
-    window.showPlinkoGame = showPlinko;
+    function initializeDealGame() {
+      resizeCanvas();
+      startGameLoop();
+    }
+
+    function focusDealGame() {
+      initializeDealGame();
+      overlay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearPrize() {
+      prizeBanner.classList.remove('show');
+      slots.forEach((slot) => slot.classList.remove('active'));
+      dropDeal.disabled = false;
+      dropDeal.style.opacity = '1';
+    }
+
+    window.showPlinkoGame = focusDealGame;
 
     function resizeCanvas() {
       const rect = canvas.parentElement.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
       const dpr = window.devicePixelRatio || 1;
       width = rect.width;
       height = rect.height;
@@ -1929,17 +1886,17 @@
     updateSize(Number(sizeSlider.value));
 
     window.addEventListener('load', () => {
-      window.setTimeout(showDealTeaser, 650);
+      initChainArt();
+      window.setTimeout(initializeDealGame, 120);
     });
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', () => {
+      resizeChainArt();
+      initializeDealGame();
+    });
     dropDeal.addEventListener('click', dropBall);
-    openDeal.addEventListener('click', showPlinko);
-    dealTeaser.addEventListener('click', showPlinko);
-    closePlinko.addEventListener('click', hidePlinko);
-    claimDeal.addEventListener('click', hidePlinko);
-    overlay.addEventListener('click', (event) => {
-      if (event.target === overlay) hidePlinko();
-    });
+    openDeal.addEventListener('click', focusDealGame);
+    closePlinko.addEventListener('click', clearPrize);
+    claimDeal.addEventListener('click', clearPrize);
     sizeSlider.addEventListener('input', (event) => updateSize(Number(event.target.value)));
   </script>
 </body>
