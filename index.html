@@ -745,7 +745,7 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      height: clamp(560px, calc(100vh - 210px), 760px);
+      height: clamp(620px, calc(100vh - 170px), 820px);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -806,15 +806,16 @@
 
     .game-header {
       position: relative;
-      height: 66px;
-      display: flex;
+      min-height: clamp(98px, 11vw, 126px);
+      display: grid;
+      grid-template-columns: minmax(180px, 270px) minmax(0, 1fr);
       align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      gap: 22px;
       overflow: hidden;
       border-bottom: 2px solid rgba(0,51,160,0.16);
-      padding: 0 14px;
+      padding: 14px 18px;
       background:
+        linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.98)),
         linear-gradient(90deg, rgba(255,255,255,0.94), rgba(242,246,252,0.94));
     }
 
@@ -826,14 +827,69 @@
       background: linear-gradient(110deg, transparent 0%, rgba(0,51,160,0.08) 45%, transparent 60%);
     }
 
+    .game-brand-lockup {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .game-brand-lockup img {
+      width: clamp(172px, 19vw, 252px);
+      max-height: 78px;
+      object-fit: contain;
+      border: 1px solid rgba(0,51,160,0.2);
+      border-radius: 8px;
+      background: #101722;
+      padding: 7px 10px;
+      filter: drop-shadow(0 10px 16px rgba(4,22,77,0.14));
+    }
+
+    .game-brand-lockup span,
+    .game-title-lockup p {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+
+    .game-brand-lockup span {
+      display: inline-flex;
+      border: 1px solid rgba(0,51,160,0.24);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.82);
+      padding: 5px 8px;
+    }
+
+    .game-title-lockup {
+      position: relative;
+      z-index: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      gap: 8px;
+    }
+
     .game-header h2 {
       font-size: clamp(1.55rem, 3vw, 2.45rem);
       line-height: 1;
-      white-space: nowrap;
+      max-width: 100%;
     }
 
-    .game-header img {
-      width: 76px;
+    .game-title-ball {
+      color: var(--patriot-red);
+    }
+
+    .game-title-lockup p {
+      max-width: 32ch;
+      line-height: 1.35;
     }
 
     .game-flag {
@@ -1113,7 +1169,7 @@
       }
 
       .plinko-modal {
-        height: 600px;
+        height: 660px;
       }
     }
 
@@ -1200,22 +1256,43 @@
       }
 
       .plinko-modal {
-        height: 520px;
+        height: 620px;
       }
 
       .game-header {
-        height: 54px;
-        padding: 0 10px;
+        min-height: 132px;
+        grid-template-columns: 1fr;
+        justify-items: center;
         gap: 8px;
+        padding: 12px 10px 10px;
+      }
+
+      .game-brand-lockup {
+        align-items: center;
+        gap: 5px;
+      }
+
+      .game-brand-lockup img {
+        width: min(180px, 74vw);
+        max-height: 58px;
+        padding: 5px 8px;
+      }
+
+      .game-brand-lockup span,
+      .game-title-lockup p {
+        font-size: 8px;
+        letter-spacing: 0.1em;
+      }
+
+      .game-title-lockup {
+        align-items: center;
+        text-align: center;
+        gap: 4px;
       }
 
       .game-header h2 {
-        font-size: 1.18rem;
+        font-size: 1.28rem;
         line-height: 1;
-      }
-
-      .game-header img {
-        display: none;
       }
 
       .game-flag {
@@ -1269,7 +1346,7 @@
     <header class="site-header">
       <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 h-[86px] flex items-center justify-between gap-4">
         <a href="#" class="flex items-center gap-4 min-w-0">
-          <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="w-44 sm:w-56 shrink-0">
+          <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="h-16 sm:h-20 w-auto shrink-0 object-contain">
           <span class="hidden xl:inline-flex micro-label">Made in the USA since 1938</span>
         </a>
         <nav class="hidden lg:flex items-center gap-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.1em] text-[var(--blue)]">
@@ -1305,12 +1382,14 @@
                 </button>
 
                 <header class="game-header">
-                  <div class="game-flag" aria-hidden="true">
-                    <div class="game-flag-stars">* * *</div>
-                    <div class="game-flag-stripes"><span></span><span></span></div>
+                  <div class="game-brand-lockup">
+                    <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing Company, Made in the USA since 1938">
+                    <span>4th Generation Family Company</span>
                   </div>
-                  <h2 id="plinkoTitle" class="text-chrome font-black text-center flex-1">Drop For A Deal</h2>
-                  <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="relative z-[1] opacity-85">
+                  <div class="game-title-lockup">
+                    <h2 id="plinkoTitle" class="text-chrome font-black">Drop <span class="game-title-ball">Ball</span> For A Deal</h2>
+                    <p>Ball chains proudly made in the USA since 1938</p>
+                  </div>
                 </header>
 
                 <div class="chrome-inner">
@@ -1366,7 +1445,7 @@
               <span class="micro-label mb-6"><i class="ph ph-factory"></i> Made in USA since 1938</span>
               <h1 class="hero-title font-display font-black chrome-text mb-6">Ball<br>Chain</h1>
               <p class="hero-copy text-xl sm:text-2xl font-extrabold leading-tight">
-                Factory-direct ball chain, bead chain, connectors, dog tags, and tools, built for buyers who need the right size, finish, and volume fast.
+                A 4th generation family company making ball chain, bead chain, connectors, dog tags, key chains, lanyards, and roller shade parts for buyers who need the right size fast.
               </p>
             </div>
             <div>
@@ -1386,8 +1465,8 @@
               </div>
               <div class="conversion-strip">
                 <span>Factory direct pricing</span>
-                <span>Bulk and custom orders</span>
-                <span>Fast catalog paths</span>
+                <span>Spools, dog tags, connectors</span>
+                <span>Made in USA since 1938</span>
               </div>
             </div>
           </div>
