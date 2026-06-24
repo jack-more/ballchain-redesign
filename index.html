@@ -247,6 +247,45 @@
       padding-bottom: 18px;
     }
 
+    .hero.is-claimed {
+      min-height: calc(100vh - 104px);
+    }
+
+    .hero.is-claimed .hero-grid {
+      min-height: calc(100vh - 128px);
+      align-content: center;
+      gap: 0;
+      padding-top: clamp(52px, 7vh, 88px);
+      padding-bottom: clamp(56px, 8vh, 96px);
+    }
+
+    .hero.is-claimed .hero-intro {
+      width: min(1180px, 100%);
+      grid-template-columns: minmax(360px, 0.86fr) minmax(420px, 0.92fr);
+      align-items: center;
+      gap: clamp(36px, 7vw, 108px);
+      padding-bottom: 0;
+    }
+
+    .hero.is-claimed .hero-intro > div:last-child {
+      border: 2px solid rgba(0,51,160,0.18);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.82);
+      box-shadow: 0 24px 58px rgba(4,22,77,0.13);
+      padding: 18px;
+      backdrop-filter: blur(14px);
+    }
+
+    .hero.is-claimed .hero-search,
+    .hero.is-claimed .conversion-strip {
+      max-width: none;
+    }
+
+    .hero.is-claimed .webgl-stage {
+      opacity: 0.34;
+      mask-image: linear-gradient(90deg, transparent 0%, transparent 48%, #000 70%, #000 100%);
+    }
+
     .hero-title {
       font-size: clamp(3.2rem, 8vw, 7.6rem);
       line-height: 0.78;
@@ -286,6 +325,43 @@
 
     .hero-search input::placeholder {
       color: rgba(4,22,77,0.48);
+    }
+
+    .claimed-inline {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+      border: 2px solid rgba(0,51,160,0.24);
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 5px 5px 0 rgba(0,51,160,0.16);
+      padding: 10px 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .hero.is-claimed .claimed-inline {
+      display: flex;
+    }
+
+    .claimed-inline strong {
+      color: var(--blue-dark);
+      white-space: nowrap;
+    }
+
+    .claimed-inline span {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #ffffff;
+      padding: 8px 11px;
+      white-space: nowrap;
     }
 
     .conversion-strip {
@@ -567,15 +643,7 @@
     }
 
     .hero-stage.is-claimed {
-      gap: 0;
-      position: fixed;
-      top: 104px;
-      left: max(16px, calc((100vw - 1536px) / 2 + 24px));
-      z-index: 60;
-      width: auto;
-      max-width: calc(100vw - 32px);
-      justify-items: start;
-      margin: 0;
+      display: none;
     }
 
     .hero-stage.is-claimed::before {
@@ -1008,6 +1076,7 @@
         grid-template-columns: 1fr;
       }
 
+      .hero.is-claimed .hero-intro,
       .hero-intro {
         grid-template-columns: 1fr;
       }
@@ -1056,6 +1125,35 @@
         mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, #000 78%, #000 100%);
       }
 
+      .hero.is-claimed .hero-grid {
+        min-height: auto;
+        padding-top: 24px;
+        padding-bottom: 56px;
+      }
+
+      .hero.is-claimed .hero-intro > div:last-child {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        backdrop-filter: none;
+      }
+
+      .hero.is-claimed .webgl-stage {
+        opacity: 0.08;
+      }
+
+      .claimed-inline {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .claimed-inline span {
+        justify-content: center;
+        width: 100%;
+      }
+
       .hero-search {
         grid-template-columns: auto 1fr;
       }
@@ -1071,19 +1169,6 @@
       .hero-stage {
         min-height: auto;
         gap: 14px;
-      }
-
-      .hero-stage.is-claimed {
-        top: 116px;
-        left: 16px;
-      }
-
-      .hero-stage.is-claimed .secured-deal {
-        max-width: calc(100vw - 32px);
-      }
-
-      .secured-deal strong {
-        display: none;
       }
 
       .hero-stage::before {
@@ -1274,6 +1359,10 @@
               </p>
             </div>
             <div>
+              <div id="claimedInline" class="claimed-inline" aria-live="polite">
+                <strong>Deal Secured</strong>
+                <span>Promo Code: <b id="inlineDealCode">FACTORY20</b></span>
+              </div>
               <label class="hero-search mb-5" aria-label="Search catalog">
                 <i class="ph ph-magnifying-glass text-2xl text-[var(--blue)]"></i>
                 <input type="search" placeholder="Search #10 nickel, dog tags, connectors">
@@ -1582,6 +1671,7 @@
 
   <script>
     const overlay = document.getElementById('plinkoOverlay');
+    const hero = document.querySelector('.hero');
     const dealStage = document.getElementById('dealStage');
     const modal = document.getElementById('plinkoModal');
     const dropDeal = document.getElementById('dropDeal');
@@ -1595,6 +1685,7 @@
     const prizeText = document.getElementById('prizeText');
     const prizeCode = document.getElementById('prizeCode');
     const securedDealCode = document.getElementById('securedDealCode');
+    const inlineDealCode = document.getElementById('inlineDealCode');
     const chainArtCanvas = document.getElementById('chainArtCanvas');
 
     let width = 0;
@@ -1735,12 +1826,18 @@
     }
 
     function focusDealGame() {
+      if (dealStage.classList.contains('is-claimed')) {
+        hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       initializeDealGame();
       overlay.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function clearPrize() {
+      hero.classList.remove('is-claimed');
       dealStage.classList.remove('is-claimed');
+      openDeal.innerHTML = '<i class="ph ph-gift text-lg"></i> Deal Drop';
       prizeBanner.classList.remove('show');
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = false;
@@ -1754,7 +1851,10 @@
         dropTimeoutId = null;
       }
       securedDealCode.textContent = prizeCode.textContent;
+      inlineDealCode.textContent = prizeCode.textContent;
+      hero.classList.add('is-claimed');
       dealStage.classList.add('is-claimed');
+      openDeal.innerHTML = `<i class="ph ph-seal-check text-lg"></i> ${prizeCode.textContent} Applied`;
       window.setTimeout(stopGameLoop, 650);
     }
 
