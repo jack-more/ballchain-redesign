@@ -49,6 +49,7 @@
 
     body {
       margin: 0;
+      overflow-x: hidden;
       color: var(--ink);
       background:
         linear-gradient(90deg, rgba(0, 51, 160, 0.055) 1px, transparent 1px),
@@ -231,13 +232,23 @@
       position: relative;
       z-index: 2;
       display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
-      gap: clamp(28px, 5vw, 76px);
-      align-items: center;
+      grid-template-columns: 1fr;
+      gap: clamp(24px, 4vw, 44px);
+      align-items: start;
+      justify-items: center;
+    }
+
+    .hero-intro {
+      width: min(1120px, 100%);
+      display: grid;
+      grid-template-columns: minmax(280px, 0.72fr) minmax(320px, 1fr);
+      gap: clamp(24px, 5vw, 64px);
+      align-items: end;
+      padding-bottom: 18px;
     }
 
     .hero-title {
-      font-size: clamp(4.2rem, 10vw, 11rem);
+      font-size: clamp(3.2rem, 8vw, 7.6rem);
       line-height: 0.78;
       letter-spacing: 0;
       text-transform: uppercase;
@@ -299,8 +310,10 @@
 
     .hero-stage {
       position: relative;
+      order: -1;
+      width: min(1120px, 100%);
       display: grid;
-      gap: 18px;
+      gap: 14px;
       align-items: center;
       justify-items: center;
     }
@@ -319,7 +332,7 @@
     .deal-caption {
       position: relative;
       z-index: 3;
-      width: min(580px, 100%);
+      width: min(1040px, 100%);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -532,7 +545,7 @@
     .plinko-overlay {
       position: relative;
       z-index: 3;
-      width: min(580px, 100%);
+      width: min(1040px, 100%);
       display: block;
       margin: 0 auto;
       padding: 0;
@@ -561,7 +574,7 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      height: clamp(460px, 62vh, 560px);
+      height: clamp(560px, calc(100vh - 210px), 760px);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -622,7 +635,7 @@
 
     .game-header {
       position: relative;
-      height: 58px;
+      height: 66px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -643,7 +656,7 @@
     }
 
     .game-header h2 {
-      font-size: clamp(1.25rem, 2.5vw, 1.9rem);
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
       line-height: 1;
       white-space: nowrap;
     }
@@ -721,7 +734,7 @@
 
     .game-drop-wrap {
       position: absolute;
-      top: 18px;
+      top: 22px;
       left: 0;
       right: 0;
       z-index: 4;
@@ -784,8 +797,8 @@
       border-radius: 999px;
       background: transparent;
       color: #fff;
-      padding: 11px 20px;
-      font-size: 0.96rem;
+      padding: 13px 24px;
+      font-size: 1.08rem;
       letter-spacing: 0.1em;
     }
 
@@ -809,7 +822,7 @@
     .slot-container {
       position: relative;
       z-index: 3;
-      height: 58px;
+      height: 68px;
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       border-top: 2px solid rgba(255,255,255,0.08);
@@ -829,7 +842,7 @@
       box-shadow: inset 0 5px 10px rgba(0,0,0,0.28);
       color: #aaa;
       font-family: "Share Tech Mono", monospace;
-      font-size: 0.64rem;
+      font-size: 0.74rem;
       text-align: center;
       text-transform: uppercase;
     }
@@ -903,9 +916,13 @@
         grid-template-columns: 1fr;
       }
 
+      .hero-intro {
+        grid-template-columns: 1fr;
+      }
+
       .hero {
         min-height: auto;
-        padding-block: 56px;
+        padding-block: 28px 56px;
       }
 
       .hero::after {
@@ -924,7 +941,7 @@
       }
 
       .plinko-modal {
-        height: min(620px, 72vh);
+        height: 600px;
       }
     }
 
@@ -936,6 +953,10 @@
 
       .hero-title {
         font-size: clamp(3.1rem, 18vw, 5rem);
+      }
+
+      .hero-intro {
+        gap: 20px;
       }
 
       .hero-search {
@@ -973,17 +994,17 @@
       }
 
       .plinko-modal {
-        height: 450px;
+        height: 520px;
       }
 
       .game-header {
-        height: 48px;
+        height: 54px;
         padding: 0 10px;
         gap: 8px;
       }
 
       .game-header h2 {
-        font-size: 1.02rem;
+        font-size: 1.18rem;
         line-height: 1;
       }
 
@@ -997,12 +1018,12 @@
       }
 
       .btn-patriotic .btn-text {
-        font-size: 0.78rem;
-        padding: 5px 9px;
+        font-size: 0.86rem;
+        padding: 8px 12px;
       }
 
       .slot-container {
-        height: 50px;
+        height: 58px;
       }
 
       .slot {
@@ -1064,30 +1085,7 @@
         <div class="webgl-stage" aria-hidden="true">
           <canvas id="chainArtCanvas"></canvas>
         </div>
-        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-12 hero-grid">
-          <div>
-            <span class="micro-label mb-8"><i class="ph ph-factory"></i> Made in USA since 1938</span>
-            <h1 class="hero-title font-display font-black chrome-text mb-8">Ball<br>Chain</h1>
-            <p class="hero-copy text-xl sm:text-2xl font-extrabold leading-tight mb-9">
-              Factory-direct ball chain, bead chain, connectors, dog tags, and tools, built for buyers who need the right size, finish, and volume fast.
-            </p>
-            <label class="hero-search mb-5" aria-label="Search catalog">
-              <i class="ph ph-magnifying-glass text-2xl text-[var(--blue)]"></i>
-              <input type="search" placeholder="Search #10 nickel, dog tags, connectors">
-              <button class="btn btn-primary !min-h-10 !px-4 !py-2" type="button">Search</button>
-            </label>
-            <div class="flex flex-col sm:flex-row gap-4 mb-10">
-              <a href="#products" class="btn btn-primary"><i class="ph ph-shopping-bag-open text-xl"></i> Shop Popular Products</a>
-              <a href="#finder" class="btn"><i class="ph ph-ruler text-xl"></i> Find Chain Size</a>
-              <a href="#categories" class="btn"><i class="ph ph-file-text text-xl"></i> Request Quote</a>
-            </div>
-            <div class="conversion-strip">
-              <span>Factory direct pricing</span>
-              <span>Bulk and custom orders</span>
-              <span>Fast catalog paths</span>
-            </div>
-          </div>
-
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 hero-grid">
           <aside class="hero-stage" aria-label="Deal plinko game">
             <div class="deal-caption">
               <strong>Start With A Deal Drop</strong>
@@ -1151,6 +1149,33 @@
               </aside>
             </div>
           </aside>
+
+          <div class="hero-intro">
+            <div>
+              <span class="micro-label mb-6"><i class="ph ph-factory"></i> Made in USA since 1938</span>
+              <h1 class="hero-title font-display font-black chrome-text mb-6">Ball<br>Chain</h1>
+              <p class="hero-copy text-xl sm:text-2xl font-extrabold leading-tight">
+                Factory-direct ball chain, bead chain, connectors, dog tags, and tools, built for buyers who need the right size, finish, and volume fast.
+              </p>
+            </div>
+            <div>
+              <label class="hero-search mb-5" aria-label="Search catalog">
+                <i class="ph ph-magnifying-glass text-2xl text-[var(--blue)]"></i>
+                <input type="search" placeholder="Search #10 nickel, dog tags, connectors">
+                <button class="btn btn-primary !min-h-10 !px-4 !py-2" type="button">Search</button>
+              </label>
+              <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <a href="#products" class="btn btn-primary"><i class="ph ph-shopping-bag-open text-xl"></i> Shop Popular Products</a>
+                <a href="#finder" class="btn"><i class="ph ph-ruler text-xl"></i> Find Chain Size</a>
+                <a href="#categories" class="btn"><i class="ph ph-file-text text-xl"></i> Request Quote</a>
+              </div>
+              <div class="conversion-strip">
+                <span>Factory direct pricing</span>
+                <span>Bulk and custom orders</span>
+                <span>Fast catalog paths</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1471,8 +1496,8 @@
     const gravity = 0.4;
     const friction = 0.99;
     const bounceDamping = 0.55;
-    const ballRadius = 12;
-    const pegRadius = 6;
+    const ballRadius = 15;
+    const pegRadius = 7;
     const ball = {
       x: 0,
       y: 0,
@@ -1840,6 +1865,8 @@
 
     function dropBall() {
       if (ball.active) return;
+      initializeDealGame();
+      if (width < 1 || height < 1) return;
       prizeBanner.classList.remove('show');
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = true;
@@ -1884,6 +1911,11 @@
     }
 
     updateSize(Number(sizeSlider.value));
+
+    requestAnimationFrame(() => {
+      initChainArt();
+      initializeDealGame();
+    });
 
     window.addEventListener('load', () => {
       initChainArt();
