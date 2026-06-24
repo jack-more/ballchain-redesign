@@ -125,11 +125,14 @@
     }
 
     .bead-rule {
-      height: 18px;
-      border-block: 2px solid var(--blue);
+      height: 10px;
+      border-block: 1px solid rgba(0,51,160,0.38);
       background:
-        radial-gradient(circle at 8px 50%, #ffffff 0 18%, #cbd2db 20% 37%, #5b6674 39% 46%, transparent 48%) 0 0 / 28px 100% repeat-x,
-        linear-gradient(180deg, #ffffff, #d8dde5);
+        linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.86), rgba(255,255,255,0)),
+        linear-gradient(180deg, #ffffff 0%, #c9d0da 45%, #eef2f7 58%, #6d7888 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.9),
+        inset 0 -1px 0 rgba(4,22,77,0.22);
     }
 
     .btn {
@@ -217,15 +220,23 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      pointer-events: none;
+      pointer-events: auto;
       opacity: 0.68;
+      cursor: grab;
       mask-image: linear-gradient(90deg, transparent 0%, transparent 30%, #000 54%, #000 100%);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .webgl-stage.is-tossing {
+      cursor: grabbing;
     }
 
     #chainArtCanvas {
       display: block;
       width: 100%;
       height: 100%;
+      pointer-events: auto;
     }
 
     .hero-grid {
@@ -1141,7 +1152,7 @@
       }
 
       .hero.is-claimed .webgl-stage {
-        opacity: 0.08;
+        opacity: 0.16;
       }
 
       .claimed-inline {
@@ -1699,6 +1710,20 @@
     let chainGroup = null;
     let chainAnimationId = null;
     let chainBeads = [];
+    let chainLine = null;
+    let chainLinePositions = null;
+    let chainRaycaster = null;
+    let chainPointerPlane = null;
+    let chainMouse = null;
+    const chainPointer = {
+      active: false,
+      beadIndex: 0,
+      world: null,
+      previousWorld: null,
+      velocity: null,
+      lastTime: 0,
+      listenersReady: false
+    };
     const particles = [];
     const trail = [];
     const pegs = [];
@@ -1718,6 +1743,108 @@
       lastX: 0
     };
 
+    function chainHomePosition(index, count) {
+      const ratio = index / (count - 1);
+      const wave = ratio * Math.PI * 5.3;
+      return new THREE.Vector3(
+        (ratio - 0.5) * 6.7 + 2.8,
+        Math.sin(wave) * 0.48 - 0.08,
+        Math.cos(wave) * 0.3
+      );
+    }
+
+    function pointerWorldFromEvent(event) {
+      if (!chainRaycaster || !chainCamera || !chainPointerPlane || !chainMouse) return null;
+      const rect = chainArtCanvas.getBoundingClientRect();
+      chainMouse.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -(((event.clientY - rect.top) / rect.height) * 2 - 1)
+      );
+      chainRaycaster.setFromCamera(chainMouse, chainCamera);
+      const point = new THREE.Vector3();
+      return chainRaycaster.ray.intersectPlane(chainPointerPlane, point) ? point : null;
+    }
+
+    function nearestChainBeadIndex(point) {
+      let closestIndex = 0;
+      let closestDistance = Infinity;
+      chainBeads.forEach((bead, index) => {
+        const distance = bead.position.distanceToSquared(point);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      return closestIndex;
+    }
+
+    function tossChain(index, velocity, strength = 1) {
+      if (!velocity) return;
+      for (let offset = -7; offset <= 7; offset++) {
+        const bead = chainBeads[index + offset];
+        if (!bead) continue;
+        const falloff = Math.max(0, 1 - Math.abs(offset) / 8) * strength;
+        bead.previous.sub(velocity.clone().multiplyScalar(8.5 * falloff));
+      }
+    }
+
+    function setupChainInteraction() {
+      if (chainPointer.listenersReady || !chainArtCanvas) return;
+      const stage = chainArtCanvas.parentElement;
+      const interactionTarget = hero || chainArtCanvas;
+
+      function shouldIgnoreChainPointer(event) {
+        if (!(event.target instanceof Element)) return false;
+        return Boolean(event.target.closest('a, button, input, label, textarea, select, .plinko-overlay, .hero-search, .claimed-inline'));
+      }
+
+      interactionTarget.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (shouldIgnoreChainPointer(event)) return;
+        if (!chainBeads.length) return;
+        const point = pointerWorldFromEvent(event);
+        if (!point) return;
+        chainPointer.active = true;
+        chainPointer.beadIndex = nearestChainBeadIndex(point);
+        chainPointer.world.copy(point);
+        chainPointer.previousWorld.copy(point);
+        chainPointer.velocity.set(0, 0, 0);
+        chainPointer.lastTime = performance.now();
+        interactionTarget.setPointerCapture(event.pointerId);
+        stage.classList.add('is-tossing');
+        event.preventDefault();
+      });
+
+      interactionTarget.addEventListener('pointermove', (event) => {
+        if (!chainPointer.active) return;
+        const point = pointerWorldFromEvent(event);
+        if (!point) return;
+        const now = performance.now();
+        const dt = Math.max(16, now - chainPointer.lastTime);
+        chainPointer.velocity.copy(point).sub(chainPointer.previousWorld).multiplyScalar(16 / dt);
+        chainPointer.previousWorld.copy(chainPointer.world);
+        chainPointer.world.copy(point);
+        chainPointer.lastTime = now;
+        tossChain(chainPointer.beadIndex, chainPointer.velocity, 0.22);
+        event.preventDefault();
+      });
+
+      function releasePointer(event) {
+        if (!chainPointer.active) return;
+        tossChain(chainPointer.beadIndex, chainPointer.velocity, 1);
+        chainPointer.active = false;
+        if (event && interactionTarget.hasPointerCapture(event.pointerId)) {
+          interactionTarget.releasePointerCapture(event.pointerId);
+        }
+        stage.classList.remove('is-tossing');
+      }
+
+      interactionTarget.addEventListener('pointerup', releasePointer);
+      interactionTarget.addEventListener('pointercancel', releasePointer);
+      interactionTarget.addEventListener('lostpointercapture', releasePointer);
+      chainPointer.listenersReady = true;
+    }
+
     function initChainArt() {
       if (!chainArtCanvas || !window.THREE || chainRenderer) return;
 
@@ -1733,68 +1860,89 @@
       chainCamera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
       chainCamera.position.set(0, 0.2, 8.8);
 
-      const ambient = new THREE.AmbientLight(0xffffff, 1.35);
-      const key = new THREE.DirectionalLight(0xffffff, 2.2);
+      chainRaycaster = new THREE.Raycaster();
+      chainPointerPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+      chainMouse = new THREE.Vector2();
+      chainPointer.world = new THREE.Vector3();
+      chainPointer.previousWorld = new THREE.Vector3();
+      chainPointer.velocity = new THREE.Vector3();
+
+      const ambient = new THREE.AmbientLight(0xffffff, 1.25);
+      const key = new THREE.DirectionalLight(0xffffff, 2.3);
       key.position.set(2.5, 4, 5);
-      const rim = new THREE.DirectionalLight(0x8fb2ff, 1.25);
+      const rim = new THREE.DirectionalLight(0x8fb2ff, 1.35);
       rim.position.set(-4, 1.5, -2);
-      const red = new THREE.PointLight(0xb22234, 2.2, 12);
+      const red = new THREE.PointLight(0xb22234, 2.1, 12);
       red.position.set(4, -1.3, 2.5);
       chainScene.add(ambient, key, rim, red);
 
       chainGroup = new THREE.Group();
-      chainGroup.position.set(3.05, -0.08, 0);
       chainScene.add(chainGroup);
 
       const chromeMaterial = new THREE.MeshStandardMaterial({
         color: 0xdfe5ec,
         metalness: 1,
-        roughness: 0.18
+        roughness: 0.16
       });
       const blueMaterial = new THREE.MeshStandardMaterial({
         color: 0x0033a0,
-        metalness: 0.8,
-        roughness: 0.25
+        metalness: 0.82,
+        roughness: 0.22
       });
       const redMaterial = new THREE.MeshStandardMaterial({
         color: 0xb22234,
-        metalness: 0.55,
-        roughness: 0.32
+        metalness: 0.58,
+        roughness: 0.28
       });
-      const beadGeometry = new THREE.SphereGeometry(0.112, 28, 28);
+      const beadGeometry = new THREE.SphereGeometry(0.118, 30, 30);
       const beadCount = 76;
 
+      chainBeads = [];
       for (let i = 0; i < beadCount; i++) {
-        const ratio = i / (beadCount - 1);
-        const wave = ratio * Math.PI * 5.2;
         const material = i % 19 === 0 ? redMaterial : i % 13 === 0 ? blueMaterial : chromeMaterial;
-        const bead = new THREE.Mesh(beadGeometry, material);
-        bead.position.set(
-          (ratio - 0.5) * 6.3,
-          Math.sin(wave) * 0.58,
-          Math.cos(wave) * 0.48
-        );
-        bead.userData.baseY = bead.position.y;
-        bead.scale.setScalar(0.82 + Math.sin(ratio * Math.PI) * 0.24);
-        chainGroup.add(bead);
-        chainBeads.push(bead);
+        const mesh = new THREE.Mesh(beadGeometry, material);
+        const home = chainHomePosition(i, beadCount);
+        mesh.position.copy(home);
+        mesh.scale.setScalar(0.84 + Math.sin((i / beadCount) * Math.PI) * 0.22);
+        chainGroup.add(mesh);
+        chainBeads.push({
+          mesh,
+          home,
+          position: home.clone(),
+          previous: home.clone(),
+          radius: 0.118
+        });
       }
+
+      chainLinePositions = new Float32Array(beadCount * 3);
+      const lineGeometry = new THREE.BufferGeometry();
+      lineGeometry.setAttribute('position', new THREE.BufferAttribute(chainLinePositions, 3));
+      chainLine = new THREE.Line(
+        lineGeometry,
+        new THREE.LineBasicMaterial({
+          color: 0x0033a0,
+          transparent: true,
+          opacity: 0.16
+        })
+      );
+      chainScene.add(chainLine);
 
       const shadowMaterial = new THREE.MeshBasicMaterial({
         color: 0x0033a0,
         transparent: true,
-        opacity: 0.08
+        opacity: 0.055
       });
       const shadowGeometry = new THREE.TorusGeometry(2.15, 0.025, 12, 160);
       for (let i = 0; i < 4; i++) {
         const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
-        shadow.position.set(1.2 + i * 0.5, -0.2 + i * 0.08, -1.1 - i * 0.16);
+        shadow.position.set(1.4 + i * 0.52, -0.35 + i * 0.05, -1.1 - i * 0.16);
         shadow.rotation.set(1.18, 0.25, 0.18 + i * 0.1);
         shadow.scale.set(1.65 + i * 0.08, 0.52 + i * 0.02, 1);
         chainScene.add(shadow);
       }
 
       resizeChainArt();
+      setupChainInteraction();
       renderChainArt();
     }
 
@@ -1807,15 +1955,77 @@
       chainCamera.updateProjectionMatrix();
     }
 
+    function stepChainPhysics(time) {
+      if (!chainBeads.length) return;
+      const restLength = 0.128;
+      const minX = -3.55;
+      const maxX = 6.85;
+      const minY = -2.62;
+      const maxY = 2.18;
+
+      chainBeads.forEach((bead, index) => {
+        if (chainPointer.active && index === chainPointer.beadIndex) {
+          bead.position.copy(chainPointer.world);
+          bead.previous.copy(chainPointer.world).sub(chainPointer.velocity);
+          return;
+        }
+
+        const velocity = bead.position.clone().sub(bead.previous).multiplyScalar(0.986);
+        bead.previous.copy(bead.position);
+        bead.position.add(velocity);
+        bead.position.y -= 0.006;
+        bead.position.x += Math.sin(time * 1.2 + index * 0.19) * 0.0008;
+
+        const homePull = index === 0 || index === chainBeads.length - 1 ? 0.018 : 0.0022;
+        bead.position.lerp(bead.home, homePull);
+
+        if (bead.position.x < minX || bead.position.x > maxX) {
+          bead.position.x = Math.max(minX, Math.min(maxX, bead.position.x));
+          bead.previous.x = bead.position.x + velocity.x * 0.45;
+        }
+        if (bead.position.y < minY || bead.position.y > maxY) {
+          bead.position.y = Math.max(minY, Math.min(maxY, bead.position.y));
+          bead.previous.y = bead.position.y + velocity.y * 0.45;
+        }
+      });
+
+      for (let pass = 0; pass < 7; pass++) {
+        for (let i = 0; i < chainBeads.length - 1; i++) {
+          const beadA = chainBeads[i];
+          const beadB = chainBeads[i + 1];
+          const delta = beadB.position.clone().sub(beadA.position);
+          const distance = Math.max(delta.length(), 0.0001);
+          const correction = delta.multiplyScalar((distance - restLength) / distance);
+          const aLocked = chainPointer.active && i === chainPointer.beadIndex;
+          const bLocked = chainPointer.active && i + 1 === chainPointer.beadIndex;
+
+          if (!aLocked) beadA.position.add(correction.clone().multiplyScalar(0.5));
+          if (!bLocked) beadB.position.sub(correction.clone().multiplyScalar(0.5));
+        }
+      }
+    }
+
     function renderChainArt() {
       if (!chainRenderer || !chainScene || !chainCamera || !chainGroup) return;
       const time = performance.now() * 0.001;
-      chainGroup.rotation.y = Math.sin(time * 0.42) * 0.28;
-      chainGroup.rotation.x = Math.sin(time * 0.3) * 0.08;
-      chainGroup.rotation.z = -0.15 + Math.sin(time * 0.22) * 0.05;
+      stepChainPhysics(time);
+
       chainBeads.forEach((bead, index) => {
-        bead.position.y = bead.userData.baseY + Math.sin(time * 1.2 + index * 0.28) * 0.035;
+        const depth = Math.sin(index * 0.35 + time * 0.9) * 0.08;
+        bead.mesh.position.set(bead.position.x, bead.position.y, depth);
+        bead.mesh.rotation.y += 0.015 + Math.abs(bead.position.x - bead.previous.x) * 0.06;
+        bead.mesh.rotation.x += 0.01 + Math.abs(bead.position.y - bead.previous.y) * 0.06;
+
+        const lineIndex = index * 3;
+        chainLinePositions[lineIndex] = bead.mesh.position.x;
+        chainLinePositions[lineIndex + 1] = bead.mesh.position.y;
+        chainLinePositions[lineIndex + 2] = bead.mesh.position.z - 0.015;
       });
+
+      if (chainLine) {
+        chainLine.geometry.attributes.position.needsUpdate = true;
+      }
+
       chainRenderer.render(chainScene, chainCamera);
       chainAnimationId = requestAnimationFrame(renderChainArt);
     }
