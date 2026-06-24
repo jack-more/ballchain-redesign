@@ -568,6 +568,18 @@
 
     .hero-stage.is-claimed {
       gap: 0;
+      position: fixed;
+      top: 104px;
+      left: max(16px, calc((100vw - 1536px) / 2 + 24px));
+      z-index: 60;
+      width: auto;
+      max-width: calc(100vw - 32px);
+      justify-items: start;
+      margin: 0;
+    }
+
+    .hero-stage.is-claimed::before {
+      content: none;
     }
 
     .hero-stage.is-claimed .deal-caption,
@@ -585,47 +597,56 @@
     .secured-deal {
       position: relative;
       z-index: 4;
-      width: min(760px, 100%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      max-width: 100%;
       max-height: 0;
       overflow: hidden;
       border: 0 solid rgba(0,51,160,0.24);
-      border-radius: 12px;
-      background: rgba(255,255,255,0.94);
-      box-shadow: 0 22px 46px rgba(4,22,77,0.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0 14px 30px rgba(4,22,77,0.12);
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(4px);
       transition: opacity 420ms ease, transform 420ms ease, max-height 560ms ease, padding 560ms ease, border-width 560ms ease;
     }
 
     .hero-stage.is-claimed .secured-deal {
-      max-height: 220px;
+      max-height: 64px;
       border-width: 2px;
-      padding: 18px;
+      padding: 8px 10px;
       opacity: 1;
       transform: translateY(0);
     }
 
     .secured-deal strong {
-      display: block;
+      display: inline-flex;
+      vertical-align: middle;
+      white-space: nowrap;
       color: var(--blue-dark);
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(1.5rem, 4vw, 3rem);
-      font-weight: 900;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
       line-height: 1;
       text-transform: uppercase;
     }
 
     .secured-deal span {
       display: inline-flex;
+      vertical-align: middle;
+      white-space: nowrap;
       width: fit-content;
-      margin-top: 12px;
+      margin-left: 0;
       border: 2px solid var(--blue);
       border-radius: 999px;
       background: var(--blue);
       color: #ffffff;
-      padding: 9px 14px;
+      padding: 7px 10px;
       font-family: "JetBrains Mono", monospace;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -1031,8 +1052,8 @@
       }
 
       .webgl-stage {
-        opacity: 0.26;
-        mask-image: linear-gradient(180deg, transparent 0%, transparent 38%, #000 68%, #000 100%);
+        opacity: 0.12;
+        mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, #000 78%, #000 100%);
       }
 
       .hero-search {
@@ -1050,6 +1071,19 @@
       .hero-stage {
         min-height: auto;
         gap: 14px;
+      }
+
+      .hero-stage.is-claimed {
+        top: 116px;
+        left: 16px;
+      }
+
+      .hero-stage.is-claimed .secured-deal {
+        max-width: calc(100vw - 32px);
+      }
+
+      .secured-deal strong {
+        display: none;
       }
 
       .hero-stage::before {
