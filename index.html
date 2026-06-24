@@ -316,6 +316,7 @@
       gap: 14px;
       align-items: center;
       justify-items: center;
+      transition: gap 500ms ease;
     }
 
     .hero-stage::before {
@@ -343,6 +344,8 @@
       box-shadow: 0 16px 34px rgba(4,22,77,0.12);
       padding: 12px 14px;
       backdrop-filter: blur(10px);
+      max-height: 120px;
+      transition: opacity 420ms ease, transform 420ms ease, max-height 520ms ease, margin 520ms ease, padding 520ms ease, border-width 520ms ease;
     }
 
     .deal-caption strong {
@@ -553,11 +556,79 @@
       backdrop-filter: none;
       opacity: 1;
       pointer-events: auto;
+      overflow: hidden;
+      max-height: 900px;
+      transition: opacity 420ms ease, transform 420ms ease, max-height 650ms ease, margin 650ms ease;
     }
 
     .plinko-overlay.is-visible {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    .hero-stage.is-claimed {
+      gap: 0;
+    }
+
+    .hero-stage.is-claimed .deal-caption,
+    .hero-stage.is-claimed .plinko-overlay {
+      max-height: 0;
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-width: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-18px) scale(0.98);
+    }
+
+    .secured-deal {
+      position: relative;
+      z-index: 4;
+      width: min(760px, 100%);
+      max-height: 0;
+      overflow: hidden;
+      border: 0 solid rgba(0,51,160,0.24);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 22px 46px rgba(4,22,77,0.14);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 420ms ease, transform 420ms ease, max-height 560ms ease, padding 560ms ease, border-width 560ms ease;
+    }
+
+    .hero-stage.is-claimed .secured-deal {
+      max-height: 220px;
+      border-width: 2px;
+      padding: 18px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .secured-deal strong {
+      display: block;
+      color: var(--blue-dark);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .secured-deal span {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 12px;
+      border: 2px solid var(--blue);
+      border-radius: 999px;
+      background: var(--blue);
+      color: #ffffff;
+      padding: 9px 14px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
     .plinko-overlay::before {
@@ -959,6 +1030,11 @@
         gap: 20px;
       }
 
+      .webgl-stage {
+        opacity: 0.26;
+        mask-image: linear-gradient(180deg, transparent 0%, transparent 38%, #000 68%, #000 100%);
+      }
+
       .hero-search {
         grid-template-columns: auto 1fr;
       }
@@ -1086,7 +1162,7 @@
           <canvas id="chainArtCanvas"></canvas>
         </div>
         <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 py-6 hero-grid">
-          <aside class="hero-stage" aria-label="Deal plinko game">
+          <aside id="dealStage" class="hero-stage" aria-label="Deal plinko game">
             <div class="deal-caption">
               <strong>Start With A Deal Drop</strong>
               <span>All visitors play first</span>
@@ -1147,6 +1223,11 @@
                   </div>
                 </footer>
               </aside>
+            </div>
+
+            <div id="securedDeal" class="secured-deal" aria-live="polite">
+              <strong>Deal Secured</strong>
+              <span>Promo Code: <b id="securedDealCode">FACTORY20</b></span>
             </div>
           </aside>
 
@@ -1467,6 +1548,7 @@
 
   <script>
     const overlay = document.getElementById('plinkoOverlay');
+    const dealStage = document.getElementById('dealStage');
     const modal = document.getElementById('plinkoModal');
     const dropDeal = document.getElementById('dropDeal');
     const openDeal = document.getElementById('openDeal');
@@ -1478,6 +1560,7 @@
     const prizeBanner = document.getElementById('prizeBanner');
     const prizeText = document.getElementById('prizeText');
     const prizeCode = document.getElementById('prizeCode');
+    const securedDealCode = document.getElementById('securedDealCode');
     const chainArtCanvas = document.getElementById('chainArtCanvas');
 
     let width = 0;
@@ -1491,13 +1574,15 @@
     let chainGroup = null;
     let chainAnimationId = null;
     let chainBeads = [];
+    const particles = [];
+    const trail = [];
     const pegs = [];
     const slotsCount = slots.length;
-    const gravity = 0.4;
-    const friction = 0.99;
-    const bounceDamping = 0.55;
-    const ballRadius = 15;
-    const pegRadius = 7;
+    const gravity = 0.64;
+    const friction = 0.992;
+    const bounceDamping = 0.84;
+    const ballRadius = 17;
+    const pegRadius = 8;
     const ball = {
       x: 0,
       y: 0,
@@ -1621,10 +1706,22 @@
     }
 
     function clearPrize() {
+      dealStage.classList.remove('is-claimed');
       prizeBanner.classList.remove('show');
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = false;
       dropDeal.style.opacity = '1';
+    }
+
+    function secureDeal() {
+      ball.active = false;
+      if (dropTimeoutId) {
+        window.clearTimeout(dropTimeoutId);
+        dropTimeoutId = null;
+      }
+      securedDealCode.textContent = prizeCode.textContent;
+      dealStage.classList.add('is-claimed');
+      window.setTimeout(stopGameLoop, 650);
     }
 
     window.showPlinkoGame = focusDealGame;
@@ -1644,9 +1741,9 @@
 
     function initBoard() {
       pegs.length = 0;
-      const rows = 11;
+      const rows = 12;
       const cols = 13;
-      const startY = 82;
+      const startY = 86;
       const endY = Math.max(startY + 140, height - 20);
       const ySpacing = (endY - startY) / rows;
       const xSpacing = width / (cols - 1);
@@ -1661,15 +1758,79 @@
           const y = startY + row * ySpacing;
 
           if (x > 20 && x < width - 20) {
-            pegs.push({ x, y, r: pegRadius });
+            pegs.push({ x, y, r: pegRadius, pulse: 0 });
           }
         }
+      }
+    }
+
+    function spawnImpact(x, y, nx, ny) {
+      for (let i = 0; i < 11; i++) {
+        const angle = Math.atan2(ny, nx) + (Math.random() - 0.5) * 1.9;
+        const speed = 2.2 + Math.random() * 5.2;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 1.2,
+          vy: Math.sin(angle) * speed + (Math.random() - 0.5) * 1.2,
+          r: 1.6 + Math.random() * 3.2,
+          life: 1,
+          hue: Math.random() > 0.72 ? '#b22234' : '#dfe7f2'
+        });
+      }
+    }
+
+    function drawTrail() {
+      for (let i = trail.length - 1; i >= 0; i--) {
+        const point = trail[i];
+        point.life -= 0.035;
+        if (point.life <= 0) {
+          trail.splice(i, 1);
+          continue;
+        }
+
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, ballRadius * point.life * 0.68, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(210, 224, 244, ${0.25 * point.life})`;
+        ctx.fill();
+      }
+    }
+
+    function drawParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        particle.life -= 0.034;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vx *= 0.96;
+        particle.vy = particle.vy * 0.96 + 0.05;
+
+        if (particle.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.r * particle.life, 0, Math.PI * 2);
+        ctx.fillStyle = particle.hue === '#b22234'
+          ? `rgba(178, 34, 52, ${particle.life})`
+          : `rgba(230, 238, 248, ${particle.life})`;
+        ctx.fill();
       }
     }
 
     function drawBackground() {
       ctx.fillStyle = '#1a1c20';
       ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(width * 0.5 - 34, 32);
+      ctx.lineTo(width * 0.5 - 8, 78);
+      ctx.moveTo(width * 0.5 + 34, 32);
+      ctx.lineTo(width * 0.5 + 8, 78);
+      ctx.stroke();
 
       ctx.strokeStyle = '#333';
       ctx.lineWidth = 2;
@@ -1689,6 +1850,16 @@
 
     function drawPegs() {
       pegs.forEach((peg) => {
+        peg.pulse *= 0.84;
+        const pulseRadius = peg.r + peg.pulse * 10;
+
+        if (peg.pulse > 0.03) {
+          ctx.beginPath();
+          ctx.arc(peg.x, peg.y, pulseRadius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(178, 34, 52, ${0.22 * peg.pulse})`;
+          ctx.fill();
+        }
+
         ctx.beginPath();
         ctx.arc(peg.x + 2, peg.y + 4, peg.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(0,0,0,0.8)';
@@ -1775,7 +1946,8 @@
       if (!ball.active) return;
 
       ball.vy += gravity;
-      const maxVelocity = 12;
+      ball.vx += Math.sin((ball.y + performance.now() * 0.08) * 0.034) * 0.052;
+      const maxVelocity = 18;
       const currentVelocitySq = ball.vx * ball.vx + ball.vy * ball.vy;
       if (currentVelocitySq > maxVelocity * maxVelocity) {
         const currentVelocity = Math.sqrt(currentVelocitySq);
@@ -1785,15 +1957,19 @@
 
       ball.x += ball.vx;
       ball.y += ball.vy;
+      trail.push({ x: ball.x, y: ball.y, life: 1 });
+      if (trail.length > 44) trail.shift();
       ball.vx *= friction;
       ball.vy *= friction;
 
       if (ball.x - ballRadius < 0) {
         ball.x = ballRadius;
-        ball.vx *= -bounceDamping;
+        ball.vx *= -0.94;
+        spawnImpact(ball.x, ball.y, 1, -0.2);
       } else if (ball.x + ballRadius > width) {
         ball.x = width - ballRadius;
-        ball.vx *= -bounceDamping;
+        ball.vx *= -0.94;
+        spawnImpact(ball.x, ball.y, -1, -0.2);
       }
 
       pegs.forEach((peg) => {
@@ -1814,9 +1990,11 @@
           const dotProduct = ball.vx * nx + ball.vy * ny;
           ball.vx -= 2 * dotProduct * nx;
           ball.vy -= 2 * dotProduct * ny;
-          ball.vx *= bounceDamping;
-          ball.vy *= bounceDamping;
-          ball.vx += (Math.random() - 0.5) * 1.5;
+          const tangentKick = (Math.random() - 0.5) * 4.4;
+          ball.vx = ball.vx * bounceDamping + -ny * tangentKick + (Math.random() - 0.5) * 1.7;
+          ball.vy = ball.vy * bounceDamping + Math.abs(nx) * 0.56;
+          peg.pulse = 1;
+          spawnImpact(ball.x - nx * ballRadius * 0.3, ball.y - ny * ballRadius * 0.3, nx, ny);
         }
       });
 
@@ -1848,7 +2026,9 @@
       drawBackground();
       drawPegs();
       updatePhysics();
+      drawTrail();
       drawBall();
+      drawParticles();
       animationId = requestAnimationFrame(gameLoop);
     }
 
@@ -1868,13 +2048,15 @@
       initializeDealGame();
       if (width < 1 || height < 1) return;
       prizeBanner.classList.remove('show');
+      trail.length = 0;
+      particles.length = 0;
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = true;
       dropDeal.style.opacity = '0.5';
-      ball.x = width / 2 + (Math.random() * 40 - 20);
-      ball.y = 20;
-      ball.vx = (Math.random() - 0.5) * 3;
-      ball.vy = 2;
+      ball.x = width / 2 + (Math.random() * 52 - 26);
+      ball.y = 26;
+      ball.vx = (Math.random() - 0.5) * 5.6;
+      ball.vy = 4.2;
       ball.active = true;
       ball.rotation = 0;
       ball.lastX = ball.x;
@@ -1882,7 +2064,7 @@
         if (!ball.active) return;
         ball.active = false;
         determinePrize();
-      }, 4200);
+      }, 5600);
     }
 
     const sizeData = [
@@ -1928,7 +2110,7 @@
     dropDeal.addEventListener('click', dropBall);
     openDeal.addEventListener('click', focusDealGame);
     closePlinko.addEventListener('click', clearPrize);
-    claimDeal.addEventListener('click', clearPrize);
+    claimDeal.addEventListener('click', secureDeal);
     sizeSlider.addEventListener('input', (event) => updateSize(Number(event.target.value)));
   </script>
 </body>
