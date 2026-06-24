@@ -1807,11 +1807,11 @@
     const trail = [];
     const pegs = [];
     const slotsCount = slots.length;
-    const gravity = 0.64;
-    const friction = 0.992;
-    const bounceDamping = 0.84;
-    const ballRadius = 17;
-    const pegRadius = 8;
+    const gravity = 0.42;
+    const friction = 0.994;
+    const bounceDamping = 0.94;
+    const ballRadius = 15;
+    const pegRadius = 7;
     const ball = {
       x: 0,
       y: 0,
@@ -2369,8 +2369,8 @@
       if (!ball.active) return;
 
       ball.vy += gravity;
-      ball.vx += Math.sin((ball.y + performance.now() * 0.08) * 0.034) * 0.052;
-      const maxVelocity = 18;
+      ball.vx += Math.sin((ball.y + performance.now() * 0.08) * 0.034) * 0.07;
+      const maxVelocity = 20;
       const currentVelocitySq = ball.vx * ball.vx + ball.vy * ball.vy;
       if (currentVelocitySq > maxVelocity * maxVelocity) {
         const currentVelocity = Math.sqrt(currentVelocitySq);
@@ -2387,11 +2387,11 @@
 
       if (ball.x - ballRadius < 0) {
         ball.x = ballRadius;
-        ball.vx *= -0.94;
+        ball.vx *= -1.02;
         spawnImpact(ball.x, ball.y, 1, -0.2);
       } else if (ball.x + ballRadius > width) {
         ball.x = width - ballRadius;
-        ball.vx *= -0.94;
+        ball.vx *= -1.02;
         spawnImpact(ball.x, ball.y, -1, -0.2);
       }
 
@@ -2413,9 +2413,9 @@
           const dotProduct = ball.vx * nx + ball.vy * ny;
           ball.vx -= 2 * dotProduct * nx;
           ball.vy -= 2 * dotProduct * ny;
-          const tangentKick = (Math.random() - 0.5) * 4.4;
-          ball.vx = ball.vx * bounceDamping + -ny * tangentKick + (Math.random() - 0.5) * 1.7;
-          ball.vy = ball.vy * bounceDamping + Math.abs(nx) * 0.56;
+          const tangentKick = (Math.random() - 0.5) * 5.8;
+          ball.vx = ball.vx * bounceDamping + -ny * tangentKick + (Math.random() - 0.5) * 2.1;
+          ball.vy = ball.vy * bounceDamping + Math.abs(nx) * 0.44;
           peg.pulse = 1;
           spawnImpact(ball.x - nx * ballRadius * 0.3, ball.y - ny * ballRadius * 0.3, nx, ny);
         }
@@ -2477,9 +2477,9 @@
       dropDeal.disabled = true;
       dropDeal.style.opacity = '0.5';
       ball.x = width / 2 + (Math.random() * 52 - 26);
-      ball.y = 26;
-      ball.vx = (Math.random() - 0.5) * 5.6;
-      ball.vy = 4.2;
+      ball.y = 24;
+      ball.vx = (Math.random() - 0.5) * 6.2;
+      ball.vy = 3.1;
       ball.active = true;
       ball.rotation = 0;
       ball.lastX = ball.x;
@@ -2487,7 +2487,7 @@
         if (!ball.active) return;
         ball.active = false;
         determinePrize();
-      }, 5600);
+      }, 7800);
     }
 
     const sizeData = [
