@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Oswald:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
@@ -33,6 +34,12 @@
       --paper: #f4f6fa;
       --line: rgba(0, 51, 160, 0.18);
       --shadow: 8px 8px 0 var(--blue);
+      --patriot-blue: #0a3161;
+      --patriot-red: #b31942;
+      --chrome-light: #f0f0f0;
+      --chrome-mid: #a0a0a0;
+      --chrome-dark: #303030;
+      --gunmetal: #1a1c20;
     }
 
     * {
@@ -414,9 +421,14 @@
       z-index: 80;
       display: grid;
       place-items: center;
-      padding: 20px;
-      background: rgba(4, 22, 77, 0.72);
-      backdrop-filter: blur(12px);
+      padding: 18px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.92)),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        #0b0d12;
+      background-size: 100% 100%, 20px 20px, 20px 20px, 100% 100%;
+      backdrop-filter: blur(10px);
       opacity: 0;
       pointer-events: none;
       transition: opacity 200ms ease;
@@ -427,132 +439,358 @@
       pointer-events: auto;
     }
 
+    .plinko-overlay::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.22) 50%, rgba(0,0,0,0.22)),
+        radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.48) 100%);
+      background-size: 100% 4px, 100% 100%;
+      animation: crtFlicker 0.15s infinite;
+    }
+
+    @keyframes crtFlicker {
+      0% { opacity: 0.92; }
+      50% { opacity: 1; }
+      100% { opacity: 0.96; }
+    }
+
     .plinko-modal {
-      width: min(1100px, 100%);
-      max-height: min(92vh, 780px);
-      display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
-      overflow: auto;
-      border: 4px solid var(--blue);
-      border-radius: 8px;
-      background: #ffffff;
-      box-shadow: 18px 18px 0 rgba(178, 34, 52, 0.95);
-    }
-
-    .plinko-side {
       position: relative;
-      padding: clamp(24px, 4vw, 48px);
-      border-right: 4px solid var(--blue);
-      background:
-        linear-gradient(90deg, rgba(0, 51, 160, 0.07) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(0, 51, 160, 0.07) 1px, transparent 1px),
-        #ffffff;
-      background-size: 26px 26px;
+      z-index: 2;
+      width: min(820px, 100%);
+      height: min(650px, calc(100vh - 36px));
+      display: flex;
+      flex-direction: column;
+      border-radius: 10px;
+      padding: 8px;
+      background: linear-gradient(135deg, var(--chrome-light) 0%, var(--chrome-mid) 40%, var(--chrome-dark) 50%, var(--chrome-mid) 60%, var(--chrome-light) 100%);
+      box-shadow:
+        0 0 20px rgba(0,0,0,0.8),
+        inset 2px 2px 5px rgba(255,255,255,0.8),
+        inset -2px -2px 5px rgba(0,0,0,0.8),
+        0 20px 50px rgba(0,0,0,0.9);
+      animation: modalEnter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
 
-    .plinko-board-wrap {
-      padding: clamp(20px, 4vw, 44px);
-      background: linear-gradient(180deg, #eef3ff, #ffffff);
+    .plinko-modal.fade-out {
+      animation: modalExit 0.4s cubic-bezier(0.5, 0, 0.1, 1) both;
     }
 
-    .plinko-board {
-      position: relative;
-      height: 520px;
-      max-height: 64vh;
-      min-height: 420px;
-      overflow: hidden;
-      border: 4px solid var(--blue);
-      border-radius: 8px;
-      background:
-        linear-gradient(90deg, rgba(0, 51, 160, 0.09) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(0, 51, 160, 0.09) 1px, transparent 1px),
-        radial-gradient(circle at 50% 10%, #ffffff, #e3e8f0);
-      background-size: 28px 28px, 28px 28px, 100% 100%;
-      box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.6);
+    @keyframes modalEnter {
+      0% { transform: scale(0.95) translateY(20px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    .peg {
+    @keyframes modalExit {
+      0% { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.95) translateY(-20px); opacity: 0; }
+    }
+
+    .game-close {
       position: absolute;
-      width: 13px;
-      height: 13px;
-      border: 2px solid var(--blue);
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #ffffff, #aeb8c5 55%, #546171);
-      box-shadow: 3px 3px 0 rgba(0, 51, 160, 0.2);
-      transform: translate(-50%, -50%);
-    }
-
-    .plinko-ball {
-      position: absolute;
-      top: 8%;
-      left: 50%;
-      width: 24px;
-      height: 24px;
-      border: 3px solid var(--blue);
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 24%, #ffffff, #d9dee6 36%, #5d6874 72%, #111822);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.95), 5px 5px 0 rgba(0, 51, 160, 0.22);
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      z-index: 3;
-    }
-
-    .plinko-bins {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 82px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      border-top: 4px solid var(--blue);
-      background: #ffffff;
-    }
-
-    .plinko-bin {
+      top: -16px;
+      right: -16px;
+      z-index: 5;
+      width: 42px;
+      height: 42px;
       display: grid;
       place-items: center;
-      border-left: 3px solid var(--blue);
-      color: var(--blue);
-      font-family: "JetBrains Mono", monospace;
-      font-size: 11px;
-      font-weight: 800;
+      border: 0;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, var(--chrome-light), var(--chrome-dark), var(--chrome-light));
+      box-shadow: 0 8px 18px rgba(0,0,0,0.7), inset 2px 2px 5px rgba(255,255,255,0.8);
+      cursor: pointer;
+    }
+
+    .game-close span {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      border: 2px solid #000;
+      border-radius: 50%;
+      background: var(--patriot-red);
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.45), inset 0 -3px 5px rgba(0,0,0,0.45);
+    }
+
+    .game-header {
+      position: relative;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      overflow: hidden;
+      border-bottom: 4px solid #000;
+      padding: 0 24px;
+      background: linear-gradient(90deg, #101217, #262a31, #101217);
+    }
+
+    .game-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.11;
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, #fff 10px, #fff 20px);
+    }
+
+    .game-flag {
+      position: relative;
+      z-index: 1;
+      width: 48px;
+      height: 32px;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      border: 1px solid #656a72;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+      transform: skewX(-12deg);
+      overflow: hidden;
+    }
+
+    .game-flag-stars {
+      display: grid;
+      place-items: center;
+      background: var(--patriot-blue);
+      color: #fff;
+      font-size: 8px;
+      line-height: 1;
+    }
+
+    .game-flag-stripes {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      background: #fff;
+    }
+
+    .game-flag-stripes span {
+      height: 2px;
+      background: var(--patriot-red);
+    }
+
+    .text-chrome {
+      font-family: "Oswald", sans-serif;
+      color: transparent;
+      background: linear-gradient(to bottom, #ffffff 0%, #b5b5b5 40%, #333333 45%, #111111 50%, #8a8a8a 55%, #ffffff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 1px rgba(0,0,0,0.55);
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.85));
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .text-chrome-sm {
+      color: transparent;
+      background: linear-gradient(to bottom, #fff 0%, #aaa 50%, #fff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .chrome-inner {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      border: 2px solid #000;
+      background: var(--gunmetal);
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+    }
+
+    .game-drop-wrap {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      right: 0;
+      z-index: 4;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .btn-chrome {
+      position: relative;
+      overflow: hidden;
+      border: 0;
+      border-radius: 4px;
+      background: linear-gradient(to bottom, #ffffff 0%, #cccccc 30%, #555555 50%, #999999 55%, #e6e6e6 100%);
+      box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.9),
+        inset 0 -2px 4px rgba(0,0,0,0.6),
+        0 4px 8px rgba(0,0,0,0.6),
+        0 0 0 2px #000;
+      color: #000;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 100ms ease, opacity 100ms ease;
+      pointer-events: auto;
+    }
+
+    .btn-chrome:active {
+      transform: translateY(2px);
+      box-shadow:
+        inset 0 4px 6px rgba(0,0,0,0.4),
+        0 1px 2px rgba(0,0,0,0.6),
+        0 0 0 2px #000;
+    }
+
+    .btn-chrome::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.8), rgba(255,255,255,0));
+      transform: skewX(-25deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -100%; }
+      20% { left: 200%; }
+      100% { left: 200%; }
+    }
+
+    .btn-patriotic {
+      padding: 4px;
+      background: linear-gradient(to right, var(--patriot-red) 0%, var(--patriot-red) 33%, #fff 33%, #fff 66%, var(--patriot-blue) 66%, var(--patriot-blue) 100%);
+      box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.6),
+        inset 0 -2px 4px rgba(0,0,0,0.6),
+        0 5px 15px rgba(0,0,0,0.5),
+        0 0 0 3px #111;
+    }
+
+    .btn-patriotic .btn-text {
+      display: inline-block;
+      border-radius: 2px;
+      background: #111;
+      color: #fff;
+      padding: 7px 18px;
+      font-size: 1.18rem;
+      letter-spacing: 0.1em;
+    }
+
+    .game-canvas-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      background:
+        radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjMWExYzIwIi8+CjxwYXRoIGQ9Ik0wIDBMOCA4Wk04IDBMMCA4WiIgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+");
+    }
+
+    #plinkoCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .slot-container {
+      position: relative;
+      z-index: 3;
+      height: 64px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      border-top: 4px solid #333;
+      background: #111;
+    }
+
+    .slot {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border-right: 2px solid #333;
+      padding: 4px;
+      background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+      box-shadow: inset 0 5px 10px rgba(0,0,0,0.8);
+      color: #aaa;
+      font-family: "Share Tech Mono", monospace;
+      font-size: 0.72rem;
       text-align: center;
       text-transform: uppercase;
     }
 
-    .plinko-bin:first-child {
-      border-left: 0;
+    .slot:last-child {
+      border-right: 0;
     }
 
-    .plinko-bin.is-winner {
-      color: #ffffff;
-      background: var(--red);
+    .slot.active {
+      color: #fff;
+      background: linear-gradient(to bottom, #2a2a2a, var(--patriot-blue));
+      text-shadow: 0 0 5px rgba(255,255,255,0.8);
+      box-shadow: inset 0 0 15px var(--patriot-blue);
+      animation: slotPulse 1s infinite alternate;
     }
 
-    .deal-result {
-      min-height: 116px;
-      display: grid;
-      align-content: center;
-      gap: 8px;
-      margin-top: 20px;
-      border: 3px solid var(--blue);
-      border-radius: 8px;
-      background: #f8faff;
-      padding: 18px;
-      color: var(--blue);
+    @keyframes slotPulse {
+      0% { filter: brightness(1); }
+      100% { filter: brightness(1.5); }
     }
 
-    .close-modal {
+    .prize-banner {
       position: absolute;
-      top: 16px;
-      right: 16px;
-      z-index: 4;
+      inset: 0;
+      z-index: 5;
+      width: min(74%, 560px);
+      max-height: 260px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid var(--chrome-light);
+      border-radius: 4px;
+      background: linear-gradient(135deg, rgba(10,49,97,0.96), rgba(0,0,0,0.96));
+      box-shadow: 0 0 30px rgba(179,25,66,0.6), inset 0 0 20px rgba(255,255,255,0.2);
+      backdrop-filter: blur(5px);
+      padding: 24px;
+      text-align: center;
+      transform: scale(0.9) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .prize-banner.show {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .game-status {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 2px solid #2c3038;
+      border-radius: 0 0 6px 6px;
+      background: #111;
+      padding: 0 24px;
     }
 
     @media (max-width: 980px) {
-      .hero-grid,
-      .plinko-modal {
+      .hero-grid {
         grid-template-columns: 1fr;
       }
 
@@ -568,9 +806,8 @@
         margin-bottom: 0;
       }
 
-      .plinko-side {
-        border-right: 0;
-        border-bottom: 4px solid var(--blue);
+      .plinko-modal {
+        height: min(650px, calc(100vh - 28px));
       }
     }
 
@@ -596,9 +833,59 @@
         grid-template-rows: minmax(220px, 250px) auto;
       }
 
-      .plinko-board {
-        min-height: 390px;
-        max-height: 58vh;
+      .plinko-overlay {
+        padding: 10px;
+      }
+
+      .plinko-modal {
+        height: calc(100vh - 20px);
+      }
+
+      .game-header {
+        height: 74px;
+        padding: 0 14px;
+        gap: 10px;
+      }
+
+      .game-header h1 {
+        font-size: 1.55rem;
+        line-height: 1;
+      }
+
+      .game-flag {
+        width: 38px;
+        height: 26px;
+      }
+
+      .btn-patriotic .btn-text {
+        font-size: 0.95rem;
+        padding: 7px 12px;
+      }
+
+      .slot-container {
+        height: 76px;
+      }
+
+      .slot {
+        font-size: 0.58rem;
+      }
+
+      .slot strong {
+        font-size: 0.66rem;
+      }
+
+      .prize-banner {
+        width: 88%;
+        padding: 16px;
+      }
+
+      .game-status {
+        height: 58px;
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        gap: 4px;
+        padding: 0 14px;
       }
 
       .btn {
@@ -611,40 +898,59 @@
   <div class="noise"></div>
 
   <div id="plinkoOverlay" class="plinko-overlay" role="dialog" aria-modal="true" aria-labelledby="plinkoTitle">
-    <section class="plinko-modal">
-      <button id="closePlinko" class="btn icon-button close-modal" aria-label="Close deal game">
-        <i class="ph ph-x text-xl"></i>
+    <section id="plinkoModal" class="plinko-modal" aria-describedby="plinkoDescription">
+      <button id="closePlinko" class="game-close" type="button" aria-label="Close deal game">
+        <span aria-hidden="true">×</span>
       </button>
-      <div class="plinko-side">
-        <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing logo" class="w-64 mb-8">
-        <span class="micro-label mb-6"><i class="ph ph-sparkle"></i> New visitor deal drop</span>
-        <h2 id="plinkoTitle" class="font-display text-5xl md:text-7xl font-black uppercase leading-none chrome-text mb-6">Drop In For Factory Pricing</h2>
-        <p class="text-lg font-bold text-[var(--blue-dark)] leading-relaxed mb-8">
-          Every first session gets a guaranteed code. Drop the chrome ball and unlock a live catalog incentive for spools, tools, and custom assemblies.
-        </p>
-        <div class="deal-result" id="dealResult">
-          <p class="font-mono text-xs font-extrabold uppercase tracking-[0.16em]">Awaiting drop</p>
-          <p class="font-display text-2xl font-black uppercase">Your deal code lands here.</p>
+
+      <header class="game-header">
+        <div class="game-flag" aria-hidden="true">
+          <div class="game-flag-stars">* * *</div>
+          <div class="game-flag-stripes"><span></span><span></span></div>
         </div>
-        <div class="mt-7 flex flex-col sm:flex-row gap-4">
-          <button id="dropDeal" class="btn btn-primary"><i class="ph ph-target text-xl"></i> Drop For Deal</button>
-          <button id="skipDeal" class="btn"><i class="ph ph-arrow-right text-xl"></i> Shop First</button>
+        <h1 id="plinkoTitle" class="text-chrome text-3xl md:text-4xl font-black text-center flex-1">Drop A Ball For A Deal</h1>
+        <img src="assets/bcm-logo.webp" alt="Ball Chain Manufacturing" class="relative z-[1] w-16 md:w-20 opacity-85">
+      </header>
+
+      <div class="chrome-inner">
+        <div class="game-drop-wrap">
+          <button id="dropDeal" class="btn-chrome btn-patriotic" type="button">
+            <span class="btn-text">Release Chain Ball</span>
+          </button>
+        </div>
+
+        <div class="game-canvas-wrap">
+          <p id="plinkoDescription" class="sr-only">Drop a chrome ball through the plinko board to unlock a promotional deal.</p>
+          <canvas id="plinkoCanvas" aria-hidden="true"></canvas>
+        </div>
+
+        <div class="slot-container" id="dealSlots">
+          <div class="slot" data-prize="10% OFF" data-code="CHAIN10"><span class="text-gray-500">Slot 1</span><strong class="text-white text-sm">10% Off</strong></div>
+          <div class="slot" data-prize="FREE SHIPPING" data-code="SHIPUSA"><span class="text-gray-500">Slot 2</span><strong class="text-white text-sm">Free Ship</strong></div>
+          <div class="slot" data-prize="BULK BONUS" data-code="BULK1938"><span class="text-gray-500">Slot 3</span><strong class="text-yellow-400 text-sm">Bulk Bonus</strong></div>
+          <div class="slot" data-prize="20% OFF" data-code="FACTORY20"><span class="text-gray-500">Slot 4</span><strong class="text-green-400 text-sm">20% Off</strong></div>
+          <div class="slot" data-prize="MYSTERY GIFT" data-code="BCM-MYSTERY"><span class="text-gray-500">Slot 5</span><strong class="text-purple-300 text-sm">Mystery</strong></div>
+          <div class="slot" data-prize="FACTORY DIRECT" data-code="DIRECT1938"><span class="text-gray-500">Slot 6</span><strong class="text-white text-sm">Factory</strong></div>
+        </div>
+
+        <div id="prizeBanner" class="prize-banner">
+          <div class="text-chrome-sm text-sm uppercase tracking-[0.2em] mb-2 font-mono">Manufactured Result</div>
+          <h2 id="prizeText" class="text-4xl md:text-5xl text-chrome font-black mb-4">20% OFF</h2>
+          <p class="text-gray-300 text-sm mb-5 font-mono bg-black/50 p-2 border border-gray-700 w-full">PROMO CODE: <span id="prizeCode">FACTORY20</span></p>
+          <button id="claimDeal" class="btn-chrome px-8 py-2 text-lg" type="button">Claim &amp; Continue</button>
         </div>
       </div>
-      <div class="plinko-board-wrap">
-        <div class="bead-rule mb-5"></div>
-        <div id="plinkoBoard" class="plinko-board">
-          <div id="plinkoBall" class="plinko-ball"></div>
-          <div class="absolute top-4 left-1/2 -translate-x-1/2 font-mono text-[11px] font-extrabold uppercase tracking-[0.16em] text-[var(--blue)] bg-white border-2 border-[var(--blue)] rounded-md px-3 py-2 shadow-[3px_3px_0_#0033a0]">Chrome start gate</div>
-          <div class="plinko-bins" id="dealBins">
-            <div class="plinko-bin">5%<br>Off</div>
-            <div class="plinko-bin">10%<br>Off</div>
-            <div class="plinko-bin">15%<br>Off</div>
-            <div class="plinko-bin">Free<br>Ship</div>
-            <div class="plinko-bin">Bulk<br>Tier</div>
-          </div>
+
+      <footer class="game-status">
+        <div class="text-xs text-gray-500 font-mono tracking-widest flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          SYSTEM: ONLINE
         </div>
-      </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-grid place-items-center w-7 h-5 text-[8px] font-black text-white bg-[var(--patriot-blue)] border border-gray-600">USA</span>
+          <span class="text-chrome-sm text-xs font-bold uppercase tracking-wider">Proudly Made in the USA since 1938</span>
+        </div>
+      </footer>
     </section>
   </div>
 
@@ -1025,94 +1331,300 @@
 
   <script>
     const overlay = document.getElementById('plinkoOverlay');
+    const modal = document.getElementById('plinkoModal');
     const dropDeal = document.getElementById('dropDeal');
     const openDeal = document.getElementById('openDeal');
     const closePlinko = document.getElementById('closePlinko');
-    const skipDeal = document.getElementById('skipDeal');
-    const board = document.getElementById('plinkoBoard');
-    const ball = document.getElementById('plinkoBall');
-    const bins = Array.from(document.querySelectorAll('.plinko-bin'));
-    const dealResult = document.getElementById('dealResult');
+    const claimDeal = document.getElementById('claimDeal');
+    const canvas = document.getElementById('plinkoCanvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const slots = Array.from(document.querySelectorAll('.slot'));
+    const prizeBanner = document.getElementById('prizeBanner');
+    const prizeText = document.getElementById('prizeText');
+    const prizeCode = document.getElementById('prizeCode');
 
-    const deals = [
-      { label: '5% off', code: 'BCM5', detail: 'Applies to featured catalog items.' },
-      { label: '10% off', code: 'CHAIN10', detail: 'A clean starter code for spools and accessories.' },
-      { label: '15% off', code: 'FACTORY15', detail: 'The premium landing spot. Nice drop.' },
-      { label: 'Free shipping', code: 'SHIPUSA', detail: 'Domestic order incentive for continental US buyers.' },
-      { label: 'Bulk tier', code: 'BULK1938', detail: 'Request factory tier pricing for volume orders.' }
-    ];
+    let width = 0;
+    let height = 0;
+    let slotWidth = 0;
+    let animationId = null;
+    const pegs = [];
+    const slotsCount = slots.length;
+    const gravity = 0.4;
+    const friction = 0.99;
+    const bounceDamping = 0.55;
+    const ballRadius = 12;
+    const pegRadius = 6;
+    const ball = {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      active: false,
+      rotation: 0,
+      lastX: 0
+    };
 
     function showPlinko() {
+      modal.classList.remove('fade-out');
       overlay.classList.add('is-visible');
       document.body.classList.add('plinko-open');
+      window.setTimeout(() => {
+        resizeCanvas();
+        startGameLoop();
+      }, 80);
     }
 
     function hidePlinko() {
-      overlay.classList.remove('is-visible');
-      document.body.classList.remove('plinko-open');
-    }
-
-    function buildPegs() {
-      const rows = [
-        [20, 40, 60, 80],
-        [30, 50, 70],
-        [20, 40, 60, 80],
-        [30, 50, 70],
-        [20, 40, 60, 80],
-        [30, 50, 70]
-      ];
-      rows.forEach((row, rowIndex) => {
-        row.forEach((left) => {
-          const peg = document.createElement('span');
-          peg.className = 'peg';
-          peg.style.left = `${left}%`;
-          peg.style.top = `${18 + rowIndex * 10}%`;
-          board.appendChild(peg);
-        });
-      });
-    }
-
-    function resetBins() {
-      bins.forEach((bin) => bin.classList.remove('is-winner'));
-    }
-
-    function runDrop() {
-      if (dropDeal.dataset.running === 'true') return;
-      dropDeal.dataset.running = 'true';
-      dropDeal.innerHTML = '<i class="ph ph-spinner-gap text-xl"></i> Dropping';
-      resetBins();
-      dealResult.innerHTML = '<p class="font-mono text-xs font-extrabold uppercase tracking-[0.16em]">Ball in motion</p><p class="font-display text-2xl font-black uppercase">Calculating factory luck.</p>';
-
-      const winnerIndex = Math.floor(Math.random() * deals.length);
-      const finalLeft = [10, 30, 50, 70, 90][winnerIndex];
-      const wobbleA = finalLeft > 50 ? finalLeft - 16 : finalLeft + 16;
-      const wobbleB = finalLeft > 50 ? finalLeft + 8 : finalLeft - 8;
-
-      ball.style.opacity = '1';
-      ball.animate([
-        { left: '50%', top: '8%' },
-        { left: '43%', top: '22%' },
-        { left: '58%', top: '34%' },
-        { left: `${wobbleA}%`, top: '48%' },
-        { left: `${wobbleB}%`, top: '62%' },
-        { left: `${finalLeft}%`, top: '78%' }
-      ], {
-        duration: 2600,
-        easing: 'cubic-bezier(.19,.76,.24,1)',
-        fill: 'forwards'
-      });
-
+      modal.classList.add('fade-out');
       window.setTimeout(() => {
-        const deal = deals[winnerIndex];
-        bins[winnerIndex].classList.add('is-winner');
-        dealResult.innerHTML = `
-          <p class="font-mono text-xs font-extrabold uppercase tracking-[0.16em]">${deal.label} unlocked</p>
-          <p class="font-display text-4xl font-black uppercase text-[var(--red)]">${deal.code}</p>
-          <p class="font-bold text-[var(--blue-dark)]">${deal.detail}</p>
-        `;
-        dropDeal.innerHTML = '<i class="ph ph-check-circle text-xl"></i> Deal Unlocked';
-        dropDeal.dataset.running = 'false';
-      }, 2700);
+        overlay.classList.remove('is-visible');
+        document.body.classList.remove('plinko-open');
+        stopGameLoop();
+      }, 360);
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      slotWidth = width / slotsCount;
+      initBoard();
+    }
+
+    function initBoard() {
+      pegs.length = 0;
+      const rows = 11;
+      const cols = 13;
+      const startY = 82;
+      const endY = Math.max(startY + 140, height - 20);
+      const ySpacing = (endY - startY) / rows;
+      const xSpacing = width / (cols - 1);
+
+      for (let row = 0; row < rows; row++) {
+        const isOffset = row % 2 !== 0;
+        const numCols = isOffset ? cols - 1 : cols;
+
+        for (let col = 0; col < numCols; col++) {
+          let x = col * xSpacing;
+          if (isOffset) x += xSpacing / 2;
+          const y = startY + row * ySpacing;
+
+          if (x > 20 && x < width - 20) {
+            pegs.push({ x, y, r: pegRadius });
+          }
+        }
+      }
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = '#1a1c20';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      for (let i = 1; i < slotsCount; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * slotWidth, Math.max(0, height - 60));
+        ctx.lineTo(i * slotWidth, height);
+        ctx.stroke();
+      }
+
+      const grad = ctx.createLinearGradient(0, height, 0, Math.max(0, height - 120));
+      grad.addColorStop(0, 'rgba(10, 49, 97, 0.22)');
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, Math.max(0, height - 120), width, 120);
+    }
+
+    function drawPegs() {
+      pegs.forEach((peg) => {
+        ctx.beginPath();
+        ctx.arc(peg.x + 2, peg.y + 4, peg.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,0,0,0.8)';
+        ctx.fill();
+
+        const grad = ctx.createRadialGradient(
+          peg.x - peg.r * 0.3,
+          peg.y - peg.r * 0.3,
+          peg.r * 0.1,
+          peg.x,
+          peg.y,
+          peg.r
+        );
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.3, '#d4d4d4');
+        grad.addColorStop(0.7, '#666666');
+        grad.addColorStop(1, '#222222');
+
+        ctx.beginPath();
+        ctx.arc(peg.x, peg.y, peg.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(peg.x, peg.y, peg.r - 0.5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      });
+    }
+
+    function drawBall() {
+      if (!ball.active) return;
+
+      ctx.save();
+      ctx.translate(ball.x, ball.y);
+      const dx = ball.x - ball.lastX;
+      ball.rotation += dx * 0.1;
+      ctx.rotate(ball.rotation);
+
+      ctx.beginPath();
+      ctx.arc(3, 5, ballRadius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fill();
+
+      const grad = ctx.createRadialGradient(
+        -ballRadius * 0.3,
+        -ballRadius * 0.3,
+        ballRadius * 0.1,
+        0,
+        0,
+        ballRadius
+      );
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.2, '#e0e0e0');
+      grad.addColorStop(0.5, '#888888');
+      grad.addColorStop(0.8, '#333333');
+      grad.addColorStop(0.9, '#a0a0a0');
+      grad.addColorStop(1, '#111111');
+
+      ctx.beginPath();
+      ctx.arc(0, 0, ballRadius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ballRadius * 0.9, ballRadius * 0.2, Math.PI / 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(0, 0, ballRadius * 0.9, ballRadius * 0.2, Math.PI / 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+      ctx.lineWidth = 0.5;
+      ctx.setLineDash([2, 4]);
+      ctx.stroke();
+      ctx.restore();
+
+      ball.lastX = ball.x;
+    }
+
+    function updatePhysics() {
+      if (!ball.active) return;
+
+      ball.vy += gravity;
+      const maxVelocity = 12;
+      const currentVelocitySq = ball.vx * ball.vx + ball.vy * ball.vy;
+      if (currentVelocitySq > maxVelocity * maxVelocity) {
+        const currentVelocity = Math.sqrt(currentVelocitySq);
+        ball.vx = (ball.vx / currentVelocity) * maxVelocity;
+        ball.vy = (ball.vy / currentVelocity) * maxVelocity;
+      }
+
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+      ball.vx *= friction;
+      ball.vy *= friction;
+
+      if (ball.x - ballRadius < 0) {
+        ball.x = ballRadius;
+        ball.vx *= -bounceDamping;
+      } else if (ball.x + ballRadius > width) {
+        ball.x = width - ballRadius;
+        ball.vx *= -bounceDamping;
+      }
+
+      pegs.forEach((peg) => {
+        const dx = ball.x - peg.x;
+        const dy = ball.y - peg.y;
+        const distSq = dx * dx + dy * dy;
+        const minDist = ballRadius + peg.r;
+
+        if (distSq < minDist * minDist) {
+          const dist = Math.max(Math.sqrt(distSq), 0.001);
+          const overlap = minDist - dist;
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          ball.x += nx * overlap;
+          ball.y += ny * overlap;
+
+          const dotProduct = ball.vx * nx + ball.vy * ny;
+          ball.vx -= 2 * dotProduct * nx;
+          ball.vy -= 2 * dotProduct * ny;
+          ball.vx *= bounceDamping;
+          ball.vy *= bounceDamping;
+          ball.vx += (Math.random() - 0.5) * 1.5;
+        }
+      });
+
+      if (ball.y > height + ballRadius) {
+        ball.active = false;
+        determinePrize();
+      }
+    }
+
+    function determinePrize() {
+      const slotIndex = Math.floor(ball.x / slotWidth);
+      const finalIndex = Math.max(0, Math.min(slotIndex, slotsCount - 1));
+      const winningSlot = slots[finalIndex];
+
+      slots.forEach((slot) => slot.classList.remove('active'));
+      winningSlot.classList.add('active');
+      prizeText.textContent = winningSlot.dataset.prize;
+      prizeCode.textContent = winningSlot.dataset.code;
+      prizeBanner.classList.add('show');
+      dropDeal.disabled = false;
+      dropDeal.style.opacity = '1';
+    }
+
+    function gameLoop() {
+      drawBackground();
+      drawPegs();
+      updatePhysics();
+      drawBall();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function startGameLoop() {
+      if (animationId) return;
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function stopGameLoop() {
+      if (!animationId) return;
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+
+    function dropBall() {
+      if (ball.active) return;
+      prizeBanner.classList.remove('show');
+      slots.forEach((slot) => slot.classList.remove('active'));
+      dropDeal.disabled = true;
+      dropDeal.style.opacity = '0.5';
+      ball.x = width / 2 + (Math.random() * 40 - 20);
+      ball.y = 20;
+      ball.vx = (Math.random() - 0.5) * 3;
+      ball.vy = 2;
+      ball.active = true;
+      ball.rotation = 0;
+      ball.lastX = ball.x;
     }
 
     const sizeData = [
@@ -1140,16 +1652,16 @@
       sizeProduct.textContent = size.product;
     }
 
-    buildPegs();
     updateSize(Number(sizeSlider.value));
 
     window.addEventListener('load', () => {
       window.setTimeout(showPlinko, 650);
     });
-    dropDeal.addEventListener('click', runDrop);
+    window.addEventListener('resize', resizeCanvas);
+    dropDeal.addEventListener('click', dropBall);
     openDeal.addEventListener('click', showPlinko);
     closePlinko.addEventListener('click', hidePlinko);
-    skipDeal.addEventListener('click', hidePlinko);
+    claimDeal.addEventListener('click', hidePlinko);
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) hidePlinko();
     });
