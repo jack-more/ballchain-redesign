@@ -1820,9 +1820,9 @@
     const trail = [];
     const pegs = [];
     const slotsCount = slots.length;
-    const gravity = 0.36;
-    const friction = 0.996;
-    const bounceDamping = 0.92;
+    const gravity = 0.33;
+    const friction = 0.994;
+    const bounceDamping = 0.84;
     const ballRadius = 16;
     const pegRadius = 7;
     const ball = {
@@ -2193,19 +2193,19 @@
     function initBoard() {
       pegs.length = 0;
       const rows = 13;
-      const cols = 15;
-      const startY = 104;
-      const endY = Math.max(startY + 180, height - 22);
+      const maxCols = 15;
+      const startY = 98;
+      const endY = Math.max(startY + 180, height - 28);
       const ySpacing = (endY - startY) / rows;
-      const xSpacing = width / (cols - 1);
+      const xSpacing = width / (maxCols + 1);
 
       for (let row = 0; row < rows; row++) {
-        const isOffset = row % 2 !== 0;
-        const numCols = isOffset ? cols - 1 : cols;
+        const pegCount = Math.min(maxCols, row + 3);
+        const rowWidth = (pegCount - 1) * xSpacing;
+        const startX = (width - rowWidth) / 2;
 
-        for (let col = 0; col < numCols; col++) {
-          let x = col * xSpacing;
-          if (isOffset) x += xSpacing / 2;
+        for (let col = 0; col < pegCount; col++) {
+          const x = startX + col * xSpacing;
           const y = startY + row * ySpacing;
 
           if (x > 20 && x < width - 20) {
@@ -2281,6 +2281,17 @@
       ctx.lineTo(width * 0.5 - 8, 78);
       ctx.moveTo(width * 0.5 + 34, 32);
       ctx.lineTo(width * 0.5 + 8, 78);
+      ctx.stroke();
+
+      const triangleTopY = 94;
+      const triangleBaseY = Math.max(triangleTopY + 180, height - 88);
+      ctx.strokeStyle = 'rgba(210,224,244,0.22)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(width * 0.5, triangleTopY - 18);
+      ctx.lineTo(width * 0.08, triangleBaseY);
+      ctx.moveTo(width * 0.5, triangleTopY - 18);
+      ctx.lineTo(width * 0.92, triangleBaseY);
       ctx.stroke();
 
       ctx.strokeStyle = '#333';
@@ -2397,8 +2408,8 @@
       if (!ball.active) return;
 
       ball.vy += gravity;
-      ball.vx += Math.sin((ball.y + performance.now() * 0.065) * 0.028) * 0.036;
-      const maxVelocity = 18;
+      ball.vx += Math.sin((ball.y + performance.now() * 0.055) * 0.024) * 0.02;
+      const maxVelocity = 14;
       const currentVelocitySq = ball.vx * ball.vx + ball.vy * ball.vy;
       if (currentVelocitySq > maxVelocity * maxVelocity) {
         const currentVelocity = Math.sqrt(currentVelocitySq);
@@ -2415,11 +2426,11 @@
 
       if (ball.x - ballRadius < 0) {
         ball.x = ballRadius;
-        ball.vx *= -0.96;
+        ball.vx *= -0.82;
         spawnImpact(ball.x, ball.y, 1, -0.2);
       } else if (ball.x + ballRadius > width) {
         ball.x = width - ballRadius;
-        ball.vx *= -0.96;
+        ball.vx *= -0.82;
         spawnImpact(ball.x, ball.y, -1, -0.2);
       }
 
@@ -2440,14 +2451,14 @@
 
           const dotProduct = ball.vx * nx + ball.vy * ny;
           if (dotProduct < 0) {
-            ball.vx -= 1.92 * dotProduct * nx;
-            ball.vy -= 1.92 * dotProduct * ny;
-            const tangentKick = (Math.random() - 0.5) * 2.8;
-            ball.vx = ball.vx * bounceDamping + -ny * tangentKick + (Math.random() - 0.5) * 0.72;
-            ball.vy = ball.vy * bounceDamping + Math.abs(nx) * 0.32;
+            ball.vx -= 1.74 * dotProduct * nx;
+            ball.vy -= 1.74 * dotProduct * ny;
+            const tangentKick = (Math.random() - 0.5) * 1.35;
+            ball.vx = ball.vx * bounceDamping + -ny * tangentKick + (Math.random() - 0.5) * 0.28;
+            ball.vy = ball.vy * bounceDamping + Math.abs(nx) * 0.18;
           } else {
-            ball.vx += nx * 0.08;
-            ball.vy += ny * 0.08;
+            ball.vx += nx * 0.04;
+            ball.vy += ny * 0.04;
           }
           peg.pulse = 1;
           spawnImpact(ball.x - nx * ballRadius * 0.3, ball.y - ny * ballRadius * 0.3, nx, ny);
@@ -2509,10 +2520,10 @@
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = true;
       dropDeal.style.opacity = '0.5';
-      ball.x = width / 2 + (Math.random() * 52 - 26);
+      ball.x = width / 2 + (Math.random() * 26 - 13);
       ball.y = 24;
-      ball.vx = (Math.random() - 0.5) * 4.4;
-      ball.vy = 2.8;
+      ball.vx = (Math.random() - 0.5) * 2.2;
+      ball.vy = 2.2;
       ball.active = true;
       ball.rotation = 0;
       ball.lastX = ball.x;
@@ -2520,7 +2531,7 @@
         if (!ball.active) return;
         ball.active = false;
         determinePrize();
-      }, 9200);
+      }, 11000);
     }
 
     const sizeData = [
