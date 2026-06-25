@@ -1823,6 +1823,8 @@
     const gravity = 0.33;
     const friction = 0.993;
     const bounceDamping = 0.72;
+    const verticalBounceDamping = 0.86;
+    const upwardBounceLimit = -1.8;
     let ballRadius = 12;
     let pegRadius = 5;
     const boardBounds = {
@@ -1840,6 +1842,7 @@
       rotation: 0,
       lastX: 0
     };
+
     function chainHomePosition(index, count) {
       const ratio = index / (count - 1);
       const wave = ratio * Math.PI * 4.6;
@@ -2382,12 +2385,12 @@
       if (ball.x < leftEdge) {
         ball.x = leftEdge;
         ball.vx = Math.abs(ball.vx) * 0.62 + 0.2;
-        ball.vy = Math.max(ball.vy, 0.78);
+        if (ball.vy > -0.2 && ball.vy < 0.78) ball.vy = 0.78;
         spawnImpact(ball.x, ball.y, 1, -0.15);
       } else if (ball.x > rightEdge) {
         ball.x = rightEdge;
         ball.vx = -Math.abs(ball.vx) * 0.62 - 0.2;
-        ball.vy = Math.max(ball.vy, 0.78);
+        if (ball.vy > -0.2 && ball.vy < 0.78) ball.vy = 0.78;
         spawnImpact(ball.x, ball.y, -1, -0.15);
       }
     }
@@ -2496,11 +2499,11 @@
                 ? (Math.random() < 0.5 ? -1 : 1)
                 : Math.sign(nx);
               ball.vx += side * (0.32 + Math.random() * 0.18);
-              ball.vy = Math.max(ball.vy, 0.72);
+              ball.vy = Math.max(ball.vy * verticalBounceDamping, upwardBounceLimit);
               ball.vx *= 0.92;
             } else {
               ball.vx += nx * 0.025;
-              ball.vy = Math.max(ball.vy + ny * 0.025, 0.62);
+              ball.vy = Math.max(ball.vy + ny * 0.018, upwardBounceLimit);
             }
 
             peg.pulse = 1;
