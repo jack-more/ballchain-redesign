@@ -1821,10 +1821,16 @@
     const pegs = [];
     const slotsCount = slots.length;
     const gravity = 0.33;
-    const friction = 0.994;
-    const bounceDamping = 0.84;
-    const ballRadius = 16;
-    const pegRadius = 7;
+    const friction = 0.993;
+    const bounceDamping = 0.72;
+    let ballRadius = 12;
+    let pegRadius = 5;
+    const boardBounds = {
+      apexY: 76,
+      baseY: 0,
+      leftBaseX: 0,
+      rightBaseX: 0
+    };
     const ball = {
       x: 0,
       y: 0,
@@ -1834,7 +1840,6 @@
       rotation: 0,
       lastX: 0
     };
-
     function chainHomePosition(index, count) {
       const ratio = index / (count - 1);
       const wave = ratio * Math.PI * 4.6;
@@ -2183,6 +2188,9 @@
       const dpr = window.devicePixelRatio || 1;
       width = rect.width;
       height = rect.height;
+      const boardScale = Math.max(0.58, Math.min(1, width / 640));
+      ballRadius = 12 * boardScale;
+      pegRadius = 5 * boardScale;
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -2192,15 +2200,24 @@
 
     function initBoard() {
       pegs.length = 0;
-      const rows = 13;
-      const maxCols = 15;
-      const startY = 98;
-      const endY = Math.max(startY + 180, height - 28);
+      const apexCount = 2;
+      const minSpacing = (ballRadius + pegRadius) * 2 + 5;
+      const maxCols = Math.max(7, Math.min(14, Math.floor(width / minSpacing) - 1));
+      const rows = Math.max(7, Math.min(13, maxCols - apexCount + 1));
+      const startY = 92;
+      const endY = Math.max(startY + 180, height - 76);
       const ySpacing = (endY - startY) / rows;
       const xSpacing = width / (maxCols + 1);
+      const bottomRowWidth = (maxCols - 1) * xSpacing;
+      const bottomStartX = (width - bottomRowWidth) / 2;
+
+      boardBounds.apexY = startY - 24;
+      boardBounds.baseY = endY + ySpacing * 0.35;
+      boardBounds.leftBaseX = Math.max(10, bottomStartX - xSpacing * 0.75);
+      boardBounds.rightBaseX = Math.min(width - 10, width - boardBounds.leftBaseX);
 
       for (let row = 0; row < rows; row++) {
-        const pegCount = Math.min(maxCols, row + 3);
+        const pegCount = Math.min(maxCols, row + apexCount);
         const rowWidth = (pegCount - 1) * xSpacing;
         const startX = (width - rowWidth) / 2;
 
@@ -2216,17 +2233,17 @@
     }
 
     function spawnImpact(x, y, nx, ny) {
-      for (let i = 0; i < 7; i++) {
-        const angle = Math.atan2(ny, nx) + (Math.random() - 0.5) * 1.2;
-        const speed = 1.8 + Math.random() * 3.4;
+      for (let i = 0; i < 3; i++) {
+        const angle = Math.atan2(ny, nx) + (Math.random() - 0.5) * 0.9;
+        const speed = 0.8 + Math.random() * 1.4;
         particles.push({
           x,
           y,
-          vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 0.64,
-          vy: Math.sin(angle) * speed + (Math.random() - 0.5) * 0.64,
-          r: 1.4 + Math.random() * 2.4,
+          vx: Math.cos(angle) * speed + (Math.random() - 0.5) * 0.24,
+          vy: Math.sin(angle) * speed + (Math.random() - 0.5) * 0.24,
+          r: 0.9 + Math.random() * 1.4,
           life: 1,
-          hue: Math.random() > 0.72 ? '#b22234' : '#dfe7f2'
+          hue: Math.random() > 0.84 ? '#b22234' : '#dfe7f2'
         });
       }
     }
@@ -2283,15 +2300,15 @@
       ctx.lineTo(width * 0.5 + 8, 78);
       ctx.stroke();
 
-      const triangleTopY = 94;
-      const triangleBaseY = Math.max(triangleTopY + 180, height - 88);
+      const triangleTopY = boardBounds.apexY;
+      const triangleBaseY = boardBounds.baseY || Math.max(triangleTopY + 180, height - 88);
       ctx.strokeStyle = 'rgba(210,224,244,0.22)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(width * 0.5, triangleTopY - 18);
-      ctx.lineTo(width * 0.08, triangleBaseY);
-      ctx.moveTo(width * 0.5, triangleTopY - 18);
-      ctx.lineTo(width * 0.92, triangleBaseY);
+      ctx.moveTo(width * 0.5, triangleTopY);
+      ctx.lineTo(boardBounds.leftBaseX, triangleBaseY);
+      ctx.moveTo(width * 0.5, triangleTopY);
+      ctx.lineTo(boardBounds.rightBaseX, triangleBaseY);
       ctx.stroke();
 
       ctx.strokeStyle = '#333';
@@ -2353,6 +2370,28 @@
       });
     }
 
+    function constrainToBoardRails() {
+      if (ball.y < boardBounds.apexY || ball.y > boardBounds.baseY || boardBounds.baseY <= boardBounds.apexY) return;
+
+      const progress = (ball.y - boardBounds.apexY) / (boardBounds.baseY - boardBounds.apexY);
+      const leftEdge = width * 0.5 + (boardBounds.leftBaseX - width * 0.5) * progress + ballRadius;
+      const rightEdge = width * 0.5 + (boardBounds.rightBaseX - width * 0.5) * progress - ballRadius;
+
+      if (leftEdge >= rightEdge) return;
+
+      if (ball.x < leftEdge) {
+        ball.x = leftEdge;
+        ball.vx = Math.abs(ball.vx) * 0.62 + 0.2;
+        ball.vy = Math.max(ball.vy, 0.78);
+        spawnImpact(ball.x, ball.y, 1, -0.15);
+      } else if (ball.x > rightEdge) {
+        ball.x = rightEdge;
+        ball.vx = -Math.abs(ball.vx) * 0.62 - 0.2;
+        ball.vy = Math.max(ball.vy, 0.78);
+        spawnImpact(ball.x, ball.y, -1, -0.15);
+      }
+    }
+
     function drawBall() {
       if (!ball.active) return;
 
@@ -2407,9 +2446,9 @@
     function updatePhysics() {
       if (!ball.active) return;
 
+      const physicsSteps = 2;
       ball.vy += gravity;
-      ball.vx += Math.sin((ball.y + performance.now() * 0.055) * 0.024) * 0.02;
-      const maxVelocity = 14;
+      const maxVelocity = 12;
       const currentVelocitySq = ball.vx * ball.vx + ball.vy * ball.vy;
       if (currentVelocitySq > maxVelocity * maxVelocity) {
         const currentVelocity = Math.sqrt(currentVelocitySq);
@@ -2417,53 +2456,63 @@
         ball.vy = (ball.vy / currentVelocity) * maxVelocity;
       }
 
-      ball.x += ball.vx;
-      ball.y += ball.vy;
+      for (let step = 0; step < physicsSteps; step++) {
+        ball.x += ball.vx / physicsSteps;
+        ball.y += ball.vy / physicsSteps;
+        constrainToBoardRails();
+
+        if (ball.x - ballRadius < 0) {
+          ball.x = ballRadius;
+          ball.vx *= -0.68;
+          spawnImpact(ball.x, ball.y, 1, -0.2);
+        } else if (ball.x + ballRadius > width) {
+          ball.x = width - ballRadius;
+          ball.vx *= -0.68;
+          spawnImpact(ball.x, ball.y, -1, -0.2);
+        }
+
+        pegs.forEach((peg) => {
+          const dx = ball.x - peg.x;
+          const dy = ball.y - peg.y;
+          const distSq = dx * dx + dy * dy;
+          const minDist = ballRadius + peg.r;
+
+          if (distSq < minDist * minDist) {
+            const dist = Math.max(Math.sqrt(distSq), 0.001);
+            const overlap = minDist - dist;
+            const nx = dx / dist;
+            const ny = dy / dist;
+
+            ball.x += nx * overlap;
+            ball.y += ny * overlap;
+
+            const impactSpeed = ball.vx * nx + ball.vy * ny;
+            if (impactSpeed < 0) {
+              const impulse = -(1 + bounceDamping) * impactSpeed;
+              ball.vx += impulse * nx;
+              ball.vy += impulse * ny;
+
+              const side = Math.abs(nx) < 0.1
+                ? (Math.random() < 0.5 ? -1 : 1)
+                : Math.sign(nx);
+              ball.vx += side * (0.32 + Math.random() * 0.18);
+              ball.vy = Math.max(ball.vy, 0.72);
+              ball.vx *= 0.92;
+            } else {
+              ball.vx += nx * 0.025;
+              ball.vy = Math.max(ball.vy + ny * 0.025, 0.62);
+            }
+
+            peg.pulse = 1;
+            spawnImpact(ball.x - nx * ballRadius * 0.3, ball.y - ny * ballRadius * 0.3, nx, ny);
+          }
+        });
+      }
+
       trail.push({ x: ball.x, y: ball.y, life: 1 });
       if (trail.length > 44) trail.shift();
       ball.vx *= friction;
       ball.vy *= friction;
-
-      if (ball.x - ballRadius < 0) {
-        ball.x = ballRadius;
-        ball.vx *= -0.82;
-        spawnImpact(ball.x, ball.y, 1, -0.2);
-      } else if (ball.x + ballRadius > width) {
-        ball.x = width - ballRadius;
-        ball.vx *= -0.82;
-        spawnImpact(ball.x, ball.y, -1, -0.2);
-      }
-
-      pegs.forEach((peg) => {
-        const dx = ball.x - peg.x;
-        const dy = ball.y - peg.y;
-        const distSq = dx * dx + dy * dy;
-        const minDist = ballRadius + peg.r;
-
-        if (distSq < minDist * minDist) {
-          const dist = Math.max(Math.sqrt(distSq), 0.001);
-          const overlap = minDist - dist;
-          const nx = dx / dist;
-          const ny = dy / dist;
-
-          ball.x += nx * overlap;
-          ball.y += ny * overlap;
-
-          const dotProduct = ball.vx * nx + ball.vy * ny;
-          if (dotProduct < 0) {
-            ball.vx -= 1.74 * dotProduct * nx;
-            ball.vy -= 1.74 * dotProduct * ny;
-            const tangentKick = (Math.random() - 0.5) * 1.35;
-            ball.vx = ball.vx * bounceDamping + -ny * tangentKick + (Math.random() - 0.5) * 0.28;
-            ball.vy = ball.vy * bounceDamping + Math.abs(nx) * 0.18;
-          } else {
-            ball.vx += nx * 0.04;
-            ball.vy += ny * 0.04;
-          }
-          peg.pulse = 1;
-          spawnImpact(ball.x - nx * ballRadius * 0.3, ball.y - ny * ballRadius * 0.3, nx, ny);
-        }
-      });
 
       if (ball.y > height + ballRadius) {
         ball.active = false;
@@ -2520,10 +2569,10 @@
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = true;
       dropDeal.style.opacity = '0.5';
-      ball.x = width / 2 + (Math.random() * 26 - 13);
+      ball.x = width / 2 + (Math.random() * 16 - 8);
       ball.y = 24;
-      ball.vx = (Math.random() - 0.5) * 2.2;
-      ball.vy = 2.2;
+      ball.vx = (Math.random() - 0.5) * 1.35;
+      ball.vy = 1.9;
       ball.active = true;
       ball.rotation = 0;
       ball.lastX = ball.x;
