@@ -1796,6 +1796,8 @@
     let slotWidth = 0;
     let animationId = null;
     let dropTimeoutId = null;
+    let prizeRevealTimeoutId = null;
+    let dropStartedAt = 0;
     let chainRenderer = null;
     let chainScene = null;
     let chainCamera = null;
@@ -1820,11 +1822,12 @@
     const trail = [];
     const pegs = [];
     const slotsCount = slots.length;
-    const gravity = 0.33;
-    const friction = 0.993;
-    const bounceDamping = 0.72;
-    const verticalBounceDamping = 0.86;
-    const upwardBounceLimit = -1.8;
+    const minDropDuration = 3200;
+    const gravity = 0.22;
+    const friction = 0.992;
+    const bounceDamping = 0.68;
+    const verticalBounceDamping = 0.84;
+    const upwardBounceLimit = -1.45;
     let ballRadius = 12;
     let pegRadius = 5;
     const boardBounds = {
@@ -2163,6 +2166,10 @@
       hero.classList.remove('is-claimed');
       dealStage.classList.remove('is-claimed');
       openDeal.innerHTML = '<i class="ph ph-gift text-lg"></i> Deal Drop';
+      if (prizeRevealTimeoutId) {
+        window.clearTimeout(prizeRevealTimeoutId);
+        prizeRevealTimeoutId = null;
+      }
       prizeBanner.classList.remove('show');
       slots.forEach((slot) => slot.classList.remove('active'));
       dropDeal.disabled = false;
@@ -2174,6 +2181,10 @@
       if (dropTimeoutId) {
         window.clearTimeout(dropTimeoutId);
         dropTimeoutId = null;
+      }
+      if (prizeRevealTimeoutId) {
+        window.clearTimeout(prizeRevealTimeoutId);
+        prizeRevealTimeoutId = null;
       }
       securedDealCode.textContent = prizeCode.textContent;
       inlineDealCode.textContent = prizeCode.textContent;
@@ -2385,12 +2396,12 @@
       if (ball.x < leftEdge) {
         ball.x = leftEdge;
         ball.vx = Math.abs(ball.vx) * 0.62 + 0.2;
-        if (ball.vy > -0.2 && ball.vy < 0.78) ball.vy = 0.78;
+        if (ball.vy > -0.2 && ball.vy < 0.46) ball.vy = 0.46;
         spawnImpact(ball.x, ball.y, 1, -0.15);
       } else if (ball.x > rightEdge) {
         ball.x = rightEdge;
         ball.vx = -Math.abs(ball.vx) * 0.62 - 0.2;
-        if (ball.vy > -0.2 && ball.vy < 0.78) ball.vy = 0.78;
+        if (ball.vy > -0.2 && ball.vy < 0.46) ball.vy = 0.46;
         spawnImpact(ball.x, ball.y, -1, -0.15);
       }
     }
@@ -2451,7 +2462,7 @@
 
       const physicsSteps = 2;
       ball.vy += gravity;
-      const maxVelocity = 12;
+      const maxVelocity = 8.5;
       const currentVelocitySq = ball.vx * ball.vx + ball.vy * ball.vy;
       if (currentVelocitySq > maxVelocity * maxVelocity) {
         const currentVelocity = Math.sqrt(currentVelocitySq);
@@ -2498,7 +2509,7 @@
               const side = Math.abs(nx) < 0.1
                 ? (Math.random() < 0.5 ? -1 : 1)
                 : Math.sign(nx);
-              ball.vx += side * (0.32 + Math.random() * 0.18);
+              ball.vx += side * (0.24 + Math.random() * 0.14);
               ball.vy = Math.max(ball.vy * verticalBounceDamping, upwardBounceLimit);
               ball.vx *= 0.92;
             } else {
@@ -2518,6 +2529,13 @@
       ball.vy *= friction;
 
       if (ball.y > height + ballRadius) {
+        const elapsed = performance.now() - dropStartedAt;
+        if (elapsed < minDropDuration) {
+          ball.y = height - ballRadius * 2;
+          ball.vy = -Math.min(2.4, Math.max(1.2, Math.abs(ball.vy) * 0.32));
+          ball.vx += (Math.random() - 0.5) * 0.5;
+          return;
+        }
         ball.active = false;
         determinePrize();
       }
@@ -2527,6 +2545,20 @@
       if (dropTimeoutId) {
         window.clearTimeout(dropTimeoutId);
         dropTimeoutId = null;
+      }
+      const elapsed = performance.now() - dropStartedAt;
+      const revealDelay = Math.max(0, minDropDuration - elapsed);
+      if (revealDelay > 0) {
+        if (prizeRevealTimeoutId) window.clearTimeout(prizeRevealTimeoutId);
+        prizeRevealTimeoutId = window.setTimeout(() => {
+          prizeRevealTimeoutId = null;
+          determinePrize();
+        }, revealDelay);
+        return;
+      }
+      if (prizeRevealTimeoutId) {
+        window.clearTimeout(prizeRevealTimeoutId);
+        prizeRevealTimeoutId = null;
       }
       const slotIndex = Math.floor(ball.x / slotWidth);
       const finalIndex = Math.max(0, Math.min(slotIndex, slotsCount - 1));
@@ -2574,11 +2606,16 @@
       dropDeal.style.opacity = '0.5';
       ball.x = width / 2 + (Math.random() * 16 - 8);
       ball.y = 24;
-      ball.vx = (Math.random() - 0.5) * 1.35;
-      ball.vy = 1.9;
+      ball.vx = (Math.random() - 0.5) * 0.9;
+      ball.vy = 0.95;
       ball.active = true;
       ball.rotation = 0;
       ball.lastX = ball.x;
+      dropStartedAt = performance.now();
+      if (prizeRevealTimeoutId) {
+        window.clearTimeout(prizeRevealTimeoutId);
+        prizeRevealTimeoutId = null;
+      }
       dropTimeoutId = window.setTimeout(() => {
         if (!ball.active) return;
         ball.active = false;
